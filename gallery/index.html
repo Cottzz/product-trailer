@@ -3,11 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>product-trailer — gallery</title>
-<meta name="description" content="Drop in any 3D model with a screen and get a 30-second cinematic trailer — as live HTML or deterministic MP4. / 给任意带屏幕的 3D 模型生成 30 秒电影感预告片。">
-<meta property="og:title" content="product-trailer — your product, in a movie trailer">
-<meta property="og:description" content="Any 3D model with a screen → a 30-second cinematic trailer, as live HTML or deterministic MP4.">
-<meta property="og:image" content="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-banner.jpg">
+<title>Turn Any 3D Model into a Cinematic 30-Second Trailer · product-trailer</title>
+<meta name="description" content="product-trailer is a free open-source Three.js tool that turns any GLB 3D model with a screen into a 30-second cinematic trailer — live HTML or deterministic MP4, no editing.">
+<link rel="canonical" href="https://cottzz.github.io/product-trailer/gallery/">
+<meta property="og:title" content="Turn Any 3D Model into a Cinematic 30-Second Trailer · product-trailer">
+<meta property="og:description" content="Free open-source Three.js tool: any GLB with a screen → a 30-second cinematic trailer, as live HTML or deterministic MP4. No manual framing, no editing, no sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cottzz.github.io/product-trailer/gallery/">
+<meta property="og:site_name" content="product-trailer">
+<meta property="og:image" content="https://cottzz.github.io/product-trailer/gallery/assets/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="product-trailer: turn any 3D model with a screen into a 30-second cinematic trailer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Turn Any 3D Model into a Cinematic 30-Second Trailer · product-trailer">
+<meta name="twitter:description" content="Free open-source Three.js tool: any GLB with a screen → a 30-second cinematic trailer, as live HTML or deterministic MP4.">
+<meta name="twitter:image" content="https://cottzz.github.io/product-trailer/gallery/assets/og-card.jpg">
+<meta name="twitter:image:alt" content="product-trailer: turn any 3D model with a screen into a 30-second cinematic trailer">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://github.com/Cottzz/product-trailer#software",
+      "name": "product-trailer",
+      "url": "https://cottzz.github.io/product-trailer/gallery/",
+      "downloadUrl": "https://github.com/Cottzz/product-trailer",
+      "softwareHelp": "https://github.com/Cottzz/product-trailer#readme",
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "3D Video Generator",
+      "operatingSystem": "Web browser",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "description": "Free open-source Three.js engine that turns any GLB 3D model with a screen into a 30-second cinematic trailer, delivered as a live single-file HTML or a frame-deterministic MP4.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "30-second cinematic trailer from any GLB model with a screen",
+        "Dual output: live single-file HTML and deterministic MP4",
+        "Three plain-JSON contracts: model.manifest.json, storyboard.json, PTContent",
+        "Vertical 9:16 and horizontal 16:9 renders",
+        "Runs fully locally, no sign-up or cloud queue",
+        "Apache-2.0 open source"
+      ]
+    },
+    {
+      "@type": "VideoObject",
+      "name": "Self dogfooding — product-trailer pitches itself",
+      "description": "A 30-second cinematic terminal-session trailer rendered by product-trailer on a 14-inch laptop model used for rendering only and never redistributed.",
+      "thumbnailUrl": "https://cottzz.github.io/product-trailer/gallery/assets/poster-dogfood.jpg",
+      "contentUrl": "https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-vertical.mp4",
+      "uploadDate": "2026-09-04",
+      "datePublished": "2026-09-04",
+      "duration": "PT30S",
+      "inLanguage": "en",
+      "publisher": { "@type": "Organization", "name": "product-trailer" }
+    },
+    {
+      "@type": "VideoObject",
+      "name": "SellerScope — Amazon product-research assistant trailer",
+      "description": "A 30-second cinematic trailer for an Amazon product-research assistant, built entirely with the terminal PTContent template and the three-contract pipeline.",
+      "thumbnailUrl": "https://cottzz.github.io/product-trailer/gallery/assets/poster-sellerscope.jpg",
+      "contentUrl": "https://github.com/Cottzz/product-trailer/releases/download/gallery-media/sellerscope-vertical.mp4",
+      "uploadDate": "2026-09-04",
+      "datePublished": "2026-09-04",
+      "duration": "PT30S",
+      "inLanguage": "en",
+      "publisher": { "@type": "Organization", "name": "product-trailer" }
+    },
+    {
+      "@type": "VideoObject",
+      "name": "Landing page auto-scroll — web-scroll template trailer",
+      "description": "A mock browser window auto-scrolls a product landing page: the cursor glides, clicks ripple, and the finale lands as a DOM overlay. Rendered by product-trailer.",
+      "thumbnailUrl": "https://cottzz.github.io/product-trailer/gallery/assets/poster-landing.jpg",
+      "contentUrl": "https://github.com/Cottzz/product-trailer/releases/download/gallery-media/landing-vertical.mp4",
+      "uploadDate": "2026-09-04",
+      "datePublished": "2026-09-04",
+      "duration": "PT30S",
+      "inLanguage": "en",
+      "publisher": { "@type": "Organization", "name": "product-trailer" }
+    }
+  ]
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2308090D'/%3E%3Crect x='6' y='9' width='20' height='13' rx='2' fill='none' stroke='%23E8B04B' stroke-width='1.6'/%3E%3Cpath d='M13 26h6M16 22v4' stroke='%2357C7E8' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='15.5' r='3' fill='%23E8B04B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -365,7 +442,7 @@
         <span data-en="Get product-trailer" data-zh="获取 product-trailer">Get product-trailer</span>
         <span class="arr">→</span>
       </a>
-      <a class="btn btn-ghost" href="calibrate/">
+      <a class="btn btn-ghost" href="../calibrate/">
         <span data-en="Try the calibration workbench" data-zh="试用校准工作台">Try the calibration workbench</span>
       </a>
     </div>
@@ -441,6 +518,20 @@
       <p class="sec-sub" data-en="Hover a poster to preview the vertical cut — every trailer here is generated end-to-end from the three contracts." data-zh="悬停海报即可预览竖屏成片——这里每一条预告片，都是从三契约端到端生成的。">Hover a poster to preview the vertical cut — every trailer here is generated end-to-end from the three contracts.</p>
     </div>
     <div class="f-grid" id="grid"></div>
+    <noscript>
+      <p><strong>Self dogfooding</strong> — a 30-second cinematic terminal-session trailer, rendered by product-trailer on a laptop model used for rendering only and never redistributed.
+        Video: <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-vertical.mp4">vertical 9:16 MP4</a> ·
+        <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-horizontal.mp4">horizontal 16:9 MP4</a></p>
+      <p><strong>SellerScope demo</strong> — a trailer for an Amazon product-research assistant, built with the terminal PTContent template and the three-contract pipeline.
+        Video: <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/sellerscope-vertical.mp4">vertical 9:16 MP4</a> ·
+        <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/sellerscope-horizontal.mp4">horizontal 16:9 MP4</a> ·
+        <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/sellerscope.html">live HTML cut</a></p>
+      <p><strong>Landing page auto-scroll</strong> — a mock browser window auto-scrolls a product landing page; the cursor glides, clicks ripple, and the finale lands as a DOM overlay.
+        Video: <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/landing-vertical.mp4">vertical 9:16 MP4</a> ·
+        <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/landing-horizontal.mp4">horizontal 16:9 MP4</a> ·
+        <a href="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/landing.html">live HTML cut</a></p>
+      <p lang="zh-CN">作品演示：项目自用终端预告片、SellerScope 亚马逊选品助手预告片、落地页自动滚动预告片——均由 product-trailer 三契约管线端到端渲染，可下载竖屏 9:16 与横屏 16:9 MP4。</p>
+    </noscript>
   </div>
 </section>
 
@@ -634,7 +725,7 @@
 
     var poster = document.createElement('img');
     poster.className = 'poster';
-    poster.alt = '';
+    poster.alt = it.title.en + ' — cinematic 3D product trailer poster still';
     /* local AI asset first; fall back to Release render frame */
     poster.src = LOCAL + it.poster;
     poster.addEventListener('error', (function (p) {
