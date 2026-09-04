@@ -11,10 +11,10 @@ Rules for adding a model:
 3. Trademarks / brand likeness are **not** covered by CC0 — avoid real logos.
 4. Record below: file, source URL, author, license, and any notes.
 
-| File | Source | Author | License | Notes |
-|------|--------|--------|---------|-------|
+| File                    | Source                          | Author                       | License              | Notes                                  |
+| ----------------------- | ------------------------------- | ---------------------------- | -------------------- | -------------------------------------- |
 | `models/builtin/laptop` | (procedural, generated in-repo) | product-trailer contributors | Apache-2.0 (project) | Stylized generic laptop, no trademarks |
-| `models/builtin/phone` | (procedural, generated in-repo) | product-trailer contributors | Apache-2.0 (project) | Stylized generic phone, no trademarks |
+| `models/builtin/phone`  | (procedural, generated in-repo) | product-trailer contributors | Apache-2.0 (project) | Stylized generic phone, no trademarks  |
 
 > Procurement scratch area (`models/_procurement/`) is git-ignored. Never commit
 > a model whose license file says "Sketchfab Standard" or similar — that license
@@ -45,6 +45,7 @@ Rules:
    content license — keep logos out of redistributable artifacts and do not
    imply endorsement.
 
-| File (local only) | Source | Author | License | Notes |
-|------|--------|--------|---------|-------|
-| `models/local/` | (operator-provided) | — | local-fetch / non-redistributable | Never committed; local renders only |
+| File (local only) | Source              | Author | License                           | Notes                               |
+| ----------------- | ------------------- | ------ | --------------------------------- | ----------------------------------- |
+| `models/local/`   | (operator-provided) | —      | local-fetch / non-redistributable | Never committed; local renders only |
+
