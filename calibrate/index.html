@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>product-trailer · model calibration</title>
+<style>
+:root{
+  --bg:#0A0E12; --panel:#0D141B; --panel2:#111a23; --line:#1F2937;
+  --green:#4AF626; --cyan:#8BE9FD; --magenta:#FF79C6; --amber:#FFB86C; --slate:#6272A4;
+  --mono:'JetBrains Mono','SF Mono','Menlo','Consolas','Noto Sans Mono CJK SC',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#04060a;overflow:hidden;font-family:var(--mono);color:#c8d3de;}
+#app{display:flex;height:100%;}
+
+/* ---------- left control panel ---------- */
+#panel{width:360px;min-width:360px;height:100%;overflow-y:auto;background:var(--panel);
+  border-right:1px solid var(--line);padding:16px 16px 40px;font-size:12px;}
+#panel h1{font-size:14px;color:var(--green);letter-spacing:1px;margin-bottom:2px;}
+#panel .sub{color:var(--slate);font-size:10px;margin-bottom:14px;}
+#panel h2{font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:1.5px;
+  margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px;}
+.row{margin-bottom:8px;}
+.row label{display:block;color:var(--slate);font-size:10px;margin-bottom:3px;}
+.row input[type=number],.row input[type=text],.row select,.row textarea{
+  width:100%;background:var(--panel2);border:1px solid var(--line);color:#e6edf3;
+  font-family:var(--mono);font-size:12px;padding:5px 7px;border-radius:3px;}
+.row textarea{resize:vertical;font-size:10px;line-height:1.4;}
+.row.split{display:flex;gap:8px;}
+.row.split>div{flex:1;}
+.inline{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
+.inline input[type=radio],.inline input[type=checkbox]{accent-color:var(--green);}
+button{background:var(--panel2);border:1px solid var(--green);color:var(--green);
+  font-family:var(--mono);font-size:11px;padding:7px 10px;border-radius:3px;cursor:pointer;
+  width:100%;margin-top:4px;letter-spacing:.5px;}
+button:hover{background:#16241a;}
+button.secondary{border-color:var(--cyan);color:var(--cyan);}
+button.secondary:hover{background:#10202a;}
+button.warn{border-color:var(--amber);color:var(--amber);}
+input[type=color]{width:100%;height:28px;background:var(--panel2);border:1px solid var(--line);
+  border-radius:3px;cursor:pointer;padding:2px;}
+#status{font-size:10px;color:var(--slate);margin-top:10px;line-height:1.6;white-space:pre-wrap;}
+#status b{color:var(--green);}
+#status .warn{color:var(--amber);}
+#status .err{color:var(--magenta);}
+.hint{color:var(--slate);font-size:10px;line-height:1.5;margin-top:4px;}
+
+/* ---------- right viewport ---------- */
+#viewport{flex:1;position:relative;height:100%;}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;}
+#gl.drag{cursor:grabbing;}
+#voverlay{position:absolute;top:12px;left:12px;right:12px;pointer-events:none;
+  font-size:11px;color:var(--slate);text-shadow:0 1px 2px #000;}
+#voverlay b{color:var(--cyan);}
+#texpreview{position:absolute;right:12px;bottom:12px;width:180px;
+  border:1px solid var(--line);border-radius:4px;background:#000;
+  box-shadow:0 6px 24px rgba(0,0,0,.6);}
+#texpreview .cap{font-size:9px;color:var(--slate);padding:4px 7px;background:var(--panel);
+  border-bottom:1px solid var(--line);}
+#texpreview canvas{width:100%;display:block;}
+#drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(10,14,18,.85);color:var(--green);font-size:15px;letter-spacing:1px;
+  pointer-events:none;border:2px dashed var(--green);z-index:5;}
+#drop.on{display:flex;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="panel">
+    <h1>product-trailer</h1>
+    <div class="sub">model calibration harness · M1.5<br/>load a model → pick the screen mesh → tune → export model.manifest.json</div>
+
+    <h2>1 · Model source</h2>
+    <div class="inline"><input type="radio" name="src" id="src-builtin" value="builtin" checked/><label for="src-builtin" style="margin:0">Built-in procedural model</label></div>
+    <div class="row" style="margin-left:22px">
+      <select id="builtin-name">
+        <option value="laptop">laptop (built-in)</option>
+        <option value="phone">phone (built-in)</option>
+      </select>
+    </div>
+    <div class="inline"><input type="radio" name="src" id="src-glb" value="glb"/><label for="src-glb" style="margin:0">External .glb file</label></div>
+    <div class="row" style="margin-left:22px">
+      <input type="file" id="file" accept=".glb,model/gltf-binary" style="font-size:10px;color:var(--slate)"/>
+      <div class="hint">Uncompressed GLB only (no Draco/KTX2/meshopt on three r128). Drag &amp; drop onto the viewport also works.</div>
+    </div>
+
+    <h2>2 · Normalize &amp; pose</h2>
+    <div class="row split">
+      <div><label>targetSize (footprint)</label><input type="number" id="target-size" value="3.2" step="0.1" min="0.5" max="10"/></div>
+      <div><label>rotationY (deg)</label><input type="number" id="rotation-y" value="0" step="5" min="-180" max="180"/></div>
+    </div>
+
+    <h2>3 · Screen mesh</h2>
+    <div class="row">
+      <label>mesh (auto-detected candidates marked ●)</label>
+      <select id="mesh-select" size="6"></select>
+    </div>
+    <div class="inline"><input type="checkbox" id="highlight" checked/><label for="highlight" style="margin:0">highlight selected mesh</label></div>
+    <div class="row split">
+      <div><label>screen width (px)</label><input type="number" id="res-w" value="1280" step="40" min="64"/></div>
+      <div><label>screen height (px)</label><input type="number" id="res-h" value="800" step="40" min="64"/></div>
+    </div>
+    <div class="row split">
+      <div><label>glow color</label><input type="color" id="glow" value="#4AF626"/></div>
+      <div><label>flipY</label>
+        <select id="flip-y">
+          <option value="auto" selected>auto (recommended)</option>
+          <option value="true">force true</option>
+          <option value="false">force false</option>
+        </select>
+      </div>
+    </div>
+    <div class="hint">The test pattern says <b style="color:var(--green)">▲ TOP</b>. If it reads upright on the screen in the viewport, orientation is correct. If upside-down, toggle flipY.</div>
+
+    <h2>4 · Brand</h2>
+    <div class="row"><label>brand name</label><input type="text" id="brand-name" value="MyProduct"/></div>
+    <div class="row"><label>tagline</label><input type="text" id="brand-tagline" value="One command. One trailer."/></div>
+    <div class="row"><label>version</label><input type="text" id="brand-version" value="v1.0"/></div>
+
+    <h2>5 · Export</h2>
+    <div class="inline"><input type="checkbox" id="inline-b64"/><label for="inline-b64" style="margin:0">inline model as base64 (single-file HTML)</label></div>
+    <div class="hint" id="inline-hint">Leave unchecked for an <b>external</b> manifest (place the .glb next to your built HTML). Inline embeds the whole GLB (kept out of git; watch the 10–15 MB single-file budget).</div>
+    <button id="btn-download">⬇ download model.manifest.json</button>
+    <button id="btn-copy" class="secondary">⧉ copy manifest to clipboard</button>
+
+    <h2>Manifest preview</h2>
+    <div class="row"><textarea id="preview" rows="14" readonly></textarea></div>
+    <div id="status">initializing…</div>
+  </div>
+
+  <div id="viewport">
+    <canvas id="gl"></canvas>
+    <div id="voverlay">drag to orbit · scroll to zoom · <b id="v-mesh">no mesh</b></div>
+    <div id="texpreview">
+      <div class="cap">test pattern (what gets mapped onto the screen)</div>
+      <canvas id="tex-canvas" width="320" height="200"></canvas>
+    </div>
+    <div id="drop">DROP .glb TO LOAD</div>
+  </div>
+</div>
+
+<script src="../engine/vendor/three.r128.min.js"></script>
+<script src="../engine/vendor/GLTFLoader.r128.js"></script>
+<script src="../engine/builtin-models.js"></script>
+<script src="calibrate.js"></script>
+</body>
+</html>
