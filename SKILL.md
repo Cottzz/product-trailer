@@ -34,12 +34,19 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 
 ## Build & export
 
-- Single-file HTML: `python tools/pt_build.py --manifest <m> --storyboard <s> --content <c> --out trailer.html`
+- Single-file HTML: `python tools/pt_build.py --manifest <m> --storyboard <s> --content <c> [cfg ...] --out trailer.html`
+  `--content` accepts multiple JS files concatenated in order. The `web-scroll`
+  template needs the example config **before** the template:
+  `--content examples/landing/content.js content/web-scroll/content.js`.
 
-- MP4 (deterministic): `python tools/pt_export_mp4.py --html trailer.html --orient portrait --out trailer.mp4`
-  (headless Chrome via CDP `__PT.seek(t)` frame stepping + OfflineAudio + ffmpeg)
+- MP4 (deterministic): `python tools/pt_export_mp4.py --html trailer.html --orientation vertical|horizontal --out trailer.mp4`
+  (headless Chrome via CDP `__PT.seek(t)` frame stepping + OfflineAudio + ffmpeg;
+  flags: `--fps 30 --sample-rate 48000 --keep-wav <wav> --probe-time 9.5`)
 
-- Gallery materials: `tools/pt_render_materials.sh`
+- Gallery materials (both orientations, posters, WAV, self-contained cuts):
+  `tools/pt_render_materials.sh`
+
+- Watch rendered examples: https://cottzz.github.io/product-trailer/gallery/
 
 ## Determinism & constraints
 
@@ -51,6 +58,14 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 
 - Models/audio committed to the repo must be CC0/procedural — see
   `models/ATTRIBUTION.md` and `assets/audio/ATTRIBUTION.md`.
+
+- **Local-only models (F7):** branded or third-party GLBs whose license forbids
+  redistribution (e.g. a MacBook model under Sketchfab Standard) may be used for
+  **local renders** — they can appear as background/props/demo footage in exported
+  videos — but their source files (and self-contained HTML inlining them) must
+  never be committed or redistributed. Keep them in the git-ignored
+  `models/local/`; keep private jobs referencing them in `examples-local/`.
+  Everything under `examples/` must depend only on `builtin:` / CC0 assets.
 
 ## Reference
 

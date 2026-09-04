@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased](https://github.com/Cottzz/product-trailer/commits/main)
 
+## [0.1.0] — 2026-09-04
+
+First public beta. Cinematic 3D product trailers from any GLB device model plus
+screen content, delivered as a self-contained HTML player and deterministic MP4.
+
 ### Added
 
 - Repository skeleton, Apache-2.0 license, third-party notices.
@@ -42,6 +47,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Gallery preview wall** (`gallery/`) — hover-to-preview trailers streamed
   from the rolling `gallery-media` GitHub Release (media never in git); served
   via GitHub Pages with `.nojekyll`.
+
+- **Shot cards** — `references/shot-cards.md`: five-beat sheet, spherical
+  camera-keyframe model, orientation differences and aesthetic rules.
 
 - **Model policy** — CC0 / public-domain / procedural models only in-repo;
   third-party or branded models (e.g. MacBook GLB) are local-render-only via

@@ -1,6 +1,6 @@
 # product-trailer 项目计划（审核修订版 v2）
 
-> 状态：**执行中** —— M0 / M1 / M1.5 / M2′（内置模型）/ M3′（web-scroll）/ M4′（MP4 导出 + 双范例 44 项门）已完成并推送 main；Gallery 三范例双方向物料已渲染；剩余 M5-lite / M6 与 CC0 模型非阻塞采购
+> 状态：**v0.1.0 已发布（beta）** —— M0 / M1 / M1.5 / M2′（内置模型）/ M3′（web-scroll）/ M4′（MP4 导出 + 双范例 44 项门）/ M5-lite（Pages 预览墙 + gallery-media Release 托管）/ M6（中英 README、SKILL.md、镜头卡、自产预告片、v0.1.0 tag+Release）均已完成；剩余非阻塞项：CC0 模型采购（M2′，v0.2 候选）、ci.yml 补推（待 `gh auth refresh --scopes workflow`）、v0.2 完整 playground
 > 日期：2026-09-04（计划创建）；状态持续更新
 > 对标项目：[video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft)
 
