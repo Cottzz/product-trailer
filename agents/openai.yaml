@@ -1,0 +1,7 @@
+# Codex skill UI metadata — schema: skill-creator references/openai_yaml.md.
+# Read by the Codex harness (not the agent); Claude Code reads SKILL.md frontmatter instead.
+interface:
+  display_name: "Product Trailer"
+  short_description: "用任意带屏 GLB 模型 + 屏幕内容，生成电影感 3D 产品预告片（单 HTML 放映 + 确定性 MP4）。"
+  brand_color: "#4AF626"
+  default_prompt: "使用 $product-trailer，把我的 GLB 产品模型制作成电影感宣传短片。"

@@ -1,0 +1,22 @@
+{
+  "name": "product-trailer",
+  "version": "0.1.0",
+  "description": "Generate cinematic 3D product trailer videos from any GLB model with a screen: plug in a model + screen content, get a self-contained HTML player and deterministic MP4 (portrait/landscape, cinematic camera moves, terminal/web-scroll templates).",
+  "author": {
+    "name": "Cottzz"
+  },
+  "homepage": "https://cottzz.github.io/product-trailer/",
+  "repository": "https://github.com/Cottzz/product-trailer",
+  "license": "Apache-2.0",
+  "keywords": [
+    "3d",
+    "threejs",
+    "glb",
+    "product-video",
+    "product-trailer",
+    "cinematic",
+    "camera-animation",
+    "agent-skill"
+  ],
+  "skills": "./"
+}

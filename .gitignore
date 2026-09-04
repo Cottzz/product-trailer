@@ -1,0 +1,37 @@
+# Build output
+dist/
+build/
+out/
+*.mp4
+*.gif
+!gallery/media/.gitkeep
+
+# Single-file exports are large; never commit them
+examples/**/export/*.html
+*.selfcontained.html
+
+# Vendor / large binaries fetched on demand
+vendor-cache/
+*.glb
+!models/builtin/**/*.glb
+models/_procurement/
+
+# Audio fetched on demand
+assets/audio/_downloads/
+
+# Node / Python
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Playwright / CI
+test-results/
+playwright-report/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
