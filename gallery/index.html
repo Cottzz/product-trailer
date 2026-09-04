@@ -5,145 +5,543 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>product-trailer — gallery</title>
 <meta name="description" content="Drop in any 3D model with a screen and get a 30-second cinematic trailer — as live HTML or deterministic MP4. / 给任意带屏幕的 3D 模型生成 30 秒电影感预告片。">
+<meta property="og:title" content="product-trailer — your product, in a movie trailer">
+<meta property="og:description" content="Any 3D model with a screen → a 30-second cinematic trailer, as live HTML or deterministic MP4.">
+<meta property="og:image" content="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-banner.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2308090D'/%3E%3Crect x='6' y='9' width='20' height='13' rx='2' fill='none' stroke='%23E8B04B' stroke-width='1.6'/%3E%3Cpath d='M13 26h6M16 22v4' stroke='%2357C7E8' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='15.5' r='3' fill='%23E8B04B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0A0E14;
-    --bg2: #0E141D;
-    --card: #111826;
-    --line: #1E2836;
-    --g: #4AF626;
-    --c: #8BE9FD;
-    --m: #FF79C6;
-    --a: #FFB86C;
-    --dim: #6272A4;
-    --fg: #E6EDF3;
+    --bg: #08090D;
+    --bg2: #0B0E15;
+    --panel: #0E1219;
+    --panel2: #121724;
+    --line: rgba(233, 237, 243, 0.09);
+    --line-strong: rgba(233, 237, 243, 0.18);
+    --fg: #E9EDF3;
+    --dim: #96A0B4;
+    --dim2: #6B7488;
+    --amber: #E8B04B;
+    --amber-soft: rgba(232, 176, 75, 0.14);
+    --cyan: #57C7E8;
+    --cyan-soft: rgba(87, 199, 232, 0.12);
+    --serif: "Fraunces", "Noto Serif SC", "Songti SC", Georgia, serif;
+    --sans: "Instrument Sans", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
     background: var(--bg);
     color: var(--fg);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 80px; position: relative; }
+  ::selection { background: rgba(232, 176, 75, 0.28); color: #fff; }
+  a { color: var(--cyan); }
 
+  /* film grain overlay */
+  .grain {
+    position: fixed; inset: -50%; z-index: 90; pointer-events: none; opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 0.9s steps(4) infinite;
+  }
+  @keyframes grain {
+    0% { transform: translate(0, 0); } 25% { transform: translate(-2%, 3%); }
+    50% { transform: translate(3%, -2%); } 75% { transform: translate(-3%, -3%); }
+    100% { transform: translate(2%, 2%); }
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- nav ---------- */
+  nav.top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 80;
+    transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+  nav.top.scrolled {
+    background: rgba(8, 9, 13, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: var(--line);
+  }
+  .nav-inner { max-width: 1180px; margin: 0 auto; padding: 16px 28px; display: flex; align-items: center; gap: 22px; }
+  .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--fg); }
+  .brand .mark {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    border: 1px solid rgba(232, 176, 75, 0.5);
+    display: grid; place-items: center;
+  }
+  .brand .mark svg { width: 17px; height: 17px; }
+  .brand .name { font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+  .brand .name em { font-style: normal; color: var(--amber); }
+  .nav-links { margin-left: auto; display: flex; align-items: center; gap: 26px; }
+  .nav-links a {
+    color: var(--dim); text-decoration: none; font-size: 13.5px; font-weight: 500; letter-spacing: 0.01em;
+    transition: color 0.18s;
+  }
+  .nav-links a:hover { color: var(--fg); }
   .lang-switch {
-    position: absolute; top: 20px; right: 24px;
-    font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: var(--c); background: transparent; border: 1px solid rgba(139,233,253,.4);
-    padding: 8px 14px; border-radius: 8px; cursor: pointer; letter-spacing: .04em;
-    transition: border-color .15s, color .15s;
+    font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--cyan); background: transparent; border: 1px solid rgba(87, 199, 232, 0.35);
+    padding: 7px 13px; border-radius: 999px; cursor: pointer; transition: border-color 0.18s, color 0.18s, background 0.18s;
   }
-  .lang-switch:hover { border-color: var(--c); color: var(--fg); }
+  .lang-switch:hover { border-color: var(--cyan); color: #fff; background: var(--cyan-soft); }
 
-  header.hero { text-align: center; margin-bottom: 56px; }
+  /* ---------- hero ---------- */
+  header.hero {
+    position: relative; min-height: 100svh; display: flex; align-items: flex-end;
+    overflow: hidden; padding: 120px 0 0;
+  }
+  .hero-media { position: absolute; inset: 0; z-index: 0; background: var(--bg2); }
+  .hero-media img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+    opacity: 0; transition: opacity 1.2s ease; animation: heroZoom 24s ease-out forwards;
+  }
+  .hero-media img.on { opacity: 1; }
+  @keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+  .hero-media::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8,9,13,0.96) 0%, rgba(8,9,13,0.82) 34%, rgba(8,9,13,0.38) 62%, rgba(8,9,13,0.55) 100%),
+      linear-gradient(0deg, var(--bg) 2%, rgba(8,9,13,0.25) 32%, rgba(8,9,13,0.05) 60%);
+  }
+  .hero-inner { position: relative; z-index: 2; width: 100%; padding-bottom: 7vh; }
   .kicker {
-    display: inline-block; font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: var(--g); border: 1px solid rgba(74,246,38,.35); border-radius: 999px;
-    padding: 7px 14px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px;
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--amber); border: 1px solid rgba(232, 176, 75, 0.32); border-radius: 999px;
+    padding: 8px 16px; background: rgba(8, 9, 13, 0.5); backdrop-filter: blur(6px);
   }
+  .kicker::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 10px var(--amber); }
   h1 {
-    font-size: clamp(34px, 6vw, 60px); line-height: 1.05; margin: 0 0 16px;
-    font-weight: 800; letter-spacing: -0.02em;
+    font-family: var(--serif); font-weight: 600;
+    font-size: clamp(42px, 7.2vw, 92px); line-height: 1.02; letter-spacing: -0.025em;
+    margin: 26px 0 22px; max-width: 14ch;
   }
-  h1 .tr { color: var(--c); }
-  .sub { color: var(--dim); font-size: clamp(15px, 2.2vw, 19px); max-width: 640px; margin: 0 auto; }
+  h1 .it { font-style: italic; color: var(--amber); font-weight: 500; }
+  .sub { color: var(--dim); font-size: clamp(16px, 2.1vw, 20px); line-height: 1.6; max-width: 560px; margin: 0; }
   .sub b { color: var(--fg); font-weight: 600; }
-  .hero-actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
   .btn {
-    display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 700;
-    font-size: 15px; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 28px; border-radius: 12px; font-weight: 600; font-size: 15.5px;
+    text-decoration: none; letter-spacing: 0.01em; cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .btn:hover { transform: translateY(-1px); }
-  .btn-m { background: var(--m); color: #160A10; box-shadow: 0 6px 24px rgba(255,121,198,.25); }
-  .btn-ghost { background: transparent; color: var(--c); border: 1px solid rgba(139,233,253,.4); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: var(--amber); color: #1A1204;
+    box-shadow: 0 10px 34px rgba(232, 176, 75, 0.28), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 14px 44px rgba(232, 176, 75, 0.4), inset 0 1px 0 rgba(255,255,255,0.25); }
+  .btn-ghost { background: rgba(8, 9, 13, 0.5); color: var(--fg); border: 1px solid var(--line-strong); backdrop-filter: blur(6px); }
+  .btn-ghost:hover { border-color: var(--cyan); color: #fff; }
+  .btn .arr { transition: transform 0.2s; }
+  .btn:hover .arr { transform: translateX(3px); }
+  .hero-stats {
+    margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--line);
+    display: flex; gap: 44px; flex-wrap: wrap;
+  }
+  .stat .num { font-family: var(--serif); font-size: clamp(26px, 3vw, 38px); font-weight: 600; color: var(--fg); line-height: 1; letter-spacing: -0.02em; }
+  .stat .num em { font-style: normal; color: var(--amber); }
+  .stat .lbl { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim2); margin-top: 8px; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
-  .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
-    display: flex; flex-direction: column; transition: border-color .2s ease, transform .2s ease;
+  /* ---------- marquee ---------- */
+  .marquee {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: var(--bg2); overflow: hidden; padding: 17px 0; white-space: nowrap;
   }
-  .card:hover { border-color: rgba(139,233,253,.45); transform: translateY(-3px); }
-  .card-media { position: relative; aspect-ratio: 9 / 16; background: #000; display: grid; place-items: center; overflow: hidden; }
-  .card-media video { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
-  .card-media .tag {
-    position: absolute; top: 12px; left: 12px; z-index: 2;
-    font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em;
-    padding: 6px 10px; border-radius: 999px; background: rgba(10,14,20,.8); color: var(--a);
-    border: 1px solid rgba(255,184,108,.4); text-transform: uppercase;
+  .marquee-track { display: inline-flex; animation: marquee 36s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  .marquee span {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--dim2); padding: 0 26px; display: inline-flex; align-items: center; gap: 26px;
   }
-  .card-body { padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .card-body h3 { margin: 0; font-size: 18px; font-weight: 700; }
-  .card-body p { margin: 0; color: var(--dim); font-size: 14px; flex: 1; }
-  .card-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .card-links a {
-    font: 600 12.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: var(--c); text-decoration: none; border: 1px solid var(--line);
-    padding: 8px 12px; border-radius: 8px; transition: border-color .15s, color .15s;
-  }
-  .card-links a:hover { border-color: var(--c); color: var(--fg); }
-  .card-links a.live { color: var(--g); border-color: rgba(74,246,38,.35); }
-  .card-links a.live:hover { border-color: var(--g); }
+  .marquee span i { font-style: normal; color: var(--amber); }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
+  /* ---------- generic section ---------- */
+  section { position: relative; }
+  .sec-pad { padding: 110px 0; }
+  .sec-head { margin-bottom: 56px; max-width: 720px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--cyan); display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--cyan); opacity: 0.6; }
+  h2 {
+    font-family: var(--serif); font-weight: 600; letter-spacing: -0.02em;
+    font-size: clamp(30px, 4.4vw, 52px); line-height: 1.08; margin: 0 0 16px;
+  }
+  h2 .it { font-style: italic; color: var(--amber); font-weight: 500; }
+  .sec-sub { color: var(--dim); font-size: 17px; margin: 0; max-width: 600px; }
+  .sec-sub code, footer code { font-family: var(--mono); font-size: 0.88em; color: var(--cyan); }
+
+  /* ---------- contracts ---------- */
+  .contracts { background: linear-gradient(180deg, var(--bg), var(--bg2) 40%, var(--bg)); }
+  .c-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .c-card {
+    position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+    padding: 34px 30px 32px; overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+  }
+  .c-card:hover { border-color: rgba(232, 176, 75, 0.4); transform: translateY(-4px); background: var(--panel2); }
+  .c-card .idx {
+    font-family: var(--mono); font-size: 12px; color: var(--dim2); letter-spacing: 0.1em;
+    display: block; margin-bottom: 22px;
+  }
+  .c-card .idx b { color: var(--amber); font-weight: 600; }
+  .c-card .ico {
+    width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--amber-soft); border: 1px solid rgba(232, 176, 75, 0.25); margin-bottom: 20px;
+  }
+  .c-card .ico svg { width: 22px; height: 22px; stroke: var(--amber); fill: none; stroke-width: 1.6; }
+  .c-card h3 { font-family: var(--serif); font-weight: 600; font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .c-card .file { font-family: var(--mono); font-size: 12.5px; color: var(--cyan); margin: 0 0 14px; }
+  .c-card p { margin: 0; color: var(--dim); font-size: 14.5px; line-height: 1.65; }
+
+  /* ---------- films ---------- */
+  .f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .film {
+    display: flex; flex-direction: column;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .film:hover { border-color: rgba(87, 199, 232, 0.45); transform: translateY(-5px); box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+  .f-media { position: relative; aspect-ratio: 9 / 16; background: #05070B; overflow: hidden; }
+  .f-media video, .f-media img.poster {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center; display: block;
+  }
+  .f-media img.poster { z-index: 1; }
+  .f-media video { z-index: 2; opacity: 0; transition: opacity 0.4s ease; }
+  .f-media.playing video { opacity: 1; }
+  .f-media::after {
+    content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    background: linear-gradient(180deg, rgba(8,9,13,0.5) 0%, transparent 22%, transparent 68%, rgba(8,9,13,0.72) 100%);
+  }
+  .f-tag {
+    position: absolute; top: 14px; left: 14px; z-index: 4;
+    font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 999px; color: var(--amber);
+    background: rgba(8, 9, 13, 0.72); border: 1px solid rgba(232, 176, 75, 0.38); backdrop-filter: blur(6px);
+  }
+  .f-format {
+    position: absolute; top: 14px; right: 14px; z-index: 4;
+    font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.1em;
+    padding: 7px 11px; border-radius: 999px; color: var(--cyan);
+    background: rgba(8, 9, 13, 0.72); border: 1px solid rgba(87, 199, 232, 0.32); backdrop-filter: blur(6px);
+  }
   .play-cta {
-    position: absolute; z-index: 2; pointer-events: none;
-    font: 700 13px/1 ui-monospace, Menlo, monospace; color: #fff;
-    background: rgba(10,14,20,.65); border: 1px solid rgba(255,255,255,.3);
-    padding: 8px 14px; border-radius: 999px; backdrop-filter: blur(4px);
-    transition: opacity .2s;
+    position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: inline-flex; align-items: center; gap: 9px; pointer-events: none;
+    font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #fff; background: rgba(8, 9, 13, 0.62); border: 1px solid rgba(255,255,255,0.28);
+    padding: 11px 18px; border-radius: 999px; backdrop-filter: blur(8px);
+    transition: opacity 0.25s ease;
   }
-  .card-media.playing .play-cta { opacity: 0; }
+  .play-cta .tri { width: 0; height: 0; border-left: 8px solid var(--amber); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .f-media.playing .play-cta { opacity: 0; }
+  .f-body { padding: 24px 24px 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .f-body h3 { font-family: var(--serif); font-weight: 600; font-size: 21px; margin: 0; letter-spacing: -0.01em; }
+  .f-body p { margin: 0; color: var(--dim); font-size: 14px; line-height: 1.65; flex: 1; }
+  .f-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .f-links a {
+    font-family: var(--mono); font-size: 12px; font-weight: 500; text-decoration: none;
+    color: var(--dim); border: 1px solid var(--line); padding: 8px 13px; border-radius: 9px;
+    transition: border-color 0.18s, color 0.18s, background 0.18s;
+  }
+  .f-links a:hover { border-color: var(--cyan); color: #fff; background: var(--cyan-soft); }
+  .f-links a.live { color: var(--amber); border-color: rgba(232, 176, 75, 0.35); }
+  .f-links a.live:hover { border-color: var(--amber); background: var(--amber-soft); color: #fff; }
 
-  section.playground {
-    margin-top: 64px; border: 1px solid var(--line); border-radius: 16px;
-    background: linear-gradient(180deg, var(--bg2), var(--bg));
-    padding: 36px 32px; text-align: center;
+  /* ---------- flow ---------- */
+  .flow { background: linear-gradient(180deg, var(--bg), var(--bg2) 55%, var(--bg)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; counter-reset: step; }
+  .step { position: relative; padding: 30px 24px 28px; border: 1px solid var(--line); border-radius: 16px; background: rgba(14, 18, 25, 0.6); }
+  .step .n {
+    font-family: var(--serif); font-style: italic; font-size: 44px; font-weight: 500; color: transparent;
+    -webkit-text-stroke: 1px rgba(232, 176, 75, 0.55); line-height: 1; display: block; margin-bottom: 16px;
   }
-  section.playground h2 { margin: 0 0 10px; font-size: 24px; }
-  section.playground p { color: var(--dim); margin: 0 auto 22px; max-width: 560px; }
-  section.playground code, footer code { font-family: ui-monospace, Menlo, monospace; }
-  footer { margin-top: 64px; text-align: center; color: var(--dim); font-size: 13px; }
-  footer code { color: var(--c); }
-  footer a { color: var(--c); }
+  .step h4 { margin: 0 0 8px; font-size: 16.5px; font-weight: 600; font-family: var(--serif); letter-spacing: -0.01em; }
+  .step p { margin: 0; font-size: 13.5px; color: var(--dim); line-height: 1.6; }
+  .step code { font-family: var(--mono); font-size: 0.85em; color: var(--cyan); }
+
+  /* ---------- CTA ---------- */
+  .cta { text-align: center; }
+  .cta-band {
+    position: relative; border: 1px solid rgba(232, 176, 75, 0.28); border-radius: 26px;
+    padding: 78px 32px; overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 90% at 50% 120%, rgba(232, 176, 75, 0.16), transparent 65%),
+      radial-gradient(ellipse 50% 70% at 85% -10%, rgba(87, 199, 232, 0.1), transparent 60%),
+      var(--panel);
+  }
+  .cta-band h2 { max-width: 20ch; margin: 0 auto 18px; }
+  .cta-band p { color: var(--dim); max-width: 520px; margin: 0 auto 34px; font-size: 16.5px; }
+  .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--line); padding: 54px 0 46px; background: var(--bg2); }
+  .foot-grid { display: flex; justify-content: space-between; gap: 36px; flex-wrap: wrap; align-items: flex-start; }
+  .foot-brand { max-width: 340px; }
+  .foot-brand .brand { margin-bottom: 14px; }
+  .foot-brand p { margin: 0; color: var(--dim2); font-size: 13.5px; line-height: 1.7; }
+  .foot-cols { display: flex; gap: 64px; flex-wrap: wrap; }
+  .foot-col h5 { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim2); margin: 0 0 14px; font-weight: 600; }
+  .foot-col a { display: block; color: var(--dim); text-decoration: none; font-size: 14px; margin-bottom: 10px; transition: color 0.18s; }
+  .foot-col a:hover { color: var(--fg); }
+  .foot-note { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--dim2); font-size: 12.5px; line-height: 1.7; }
+  .foot-note p { margin: 0 0 8px; }
+
+  /* ---------- reveal on scroll ---------- */
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+  .rv.in { opacity: 1; transform: none; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 960px) {
+    .c-grid, .f-grid { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .sec-pad { padding: 78px 0; }
+    .c-grid, .f-grid, .steps { grid-template-columns: 1fr; }
+    .nav-links a.opt { display: none; }
+    .hero-stats { gap: 28px; }
+    .f-media { max-height: 70vh; }
+    .cta-band { padding: 56px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grain, .marquee-track, .hero-media img { animation: none !important; }
+    html { scroll-behavior: auto; }
+    .rv { opacity: 1; transform: none; transition: none; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <button class="lang-switch" id="lang-switch" type="button" aria-label="Switch language">中文</button>
+<div class="grain" aria-hidden="true"></div>
 
-  <header class="hero">
-    <span class="kicker" data-en="open source · Apache-2.0 · beta" data-zh="开源 · Apache-2.0 · beta">open source · Apache-2.0 · beta</span>
-    <h1 data-en="Your product,<br>in a <span class='tr'>movie trailer</span>" data-zh="你的产品，<br>化身<span class='tr'>电影预告片</span>">Your product,<br>in a <span class="tr">movie trailer</span></h1>
-    <p class="sub" data-en="Drop in any 3D model with a screen and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a deterministic <b>MP4</b>, with no manual framing." data-zh="给任意带屏幕的 3D 模型，生成一段 <b>30 秒电影感预告片</b>：可交付为可交互的单文件 <b>HTML</b>，也可导出确定性 <b>MP4</b>，全程无需手动取景。">Drop in any 3D model with a screen and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a deterministic <b>MP4</b>, with no manual framing.</p>
-    <div class="hero-actions">
-      <a class="btn btn-m" href="https://github.com/Cottzz/product-trailer" data-en="Get product-trailer" data-zh="获取 product-trailer">Get product-trailer</a>
-      <a class="btn btn-ghost" href="calibrate/" data-en="Try the calibration playground" data-zh="试用校准工作台">Try the calibration playground</a>
+<nav class="top" id="topnav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="mark">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="8" width="22" height="14" rx="2.2" stroke="#E8B04B" stroke-width="1.7"/>
+          <path d="M13 26h6M16 22v4" stroke="#57C7E8" stroke-width="1.7" stroke-linecap="round"/>
+          <circle cx="16" cy="15" r="2.6" fill="#E8B04B"/>
+        </svg>
+      </span>
+      <span class="name">product<em>-</em>trailer</span>
+    </a>
+    <div class="nav-links">
+      <a class="opt" href="#films" data-en="Films" data-zh="成片">Films</a>
+      <a class="opt" href="#contracts" data-en="Contracts" data-zh="三契约">Contracts</a>
+      <a class="opt" href="#workflow" data-en="Workflow" data-zh="流程">Workflow</a>
+      <a href="https://github.com/Cottzz/product-trailer" data-en="GitHub" data-zh="GitHub">GitHub</a>
+      <button class="lang-switch" id="lang-switch" type="button" aria-label="Switch language">中文</button>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <div class="grid" id="grid"></div>
+<header class="hero" id="top">
+  <div class="hero-media">
+    <img id="hero-img" alt="" aria-hidden="true">
+  </div>
+  <div class="wrap hero-inner">
+    <span class="kicker rv" data-en="Open source · Apache-2.0 · Beta" data-zh="开源 · Apache-2.0 · Beta">Open source · Apache-2.0 · Beta</span>
+    <h1 class="rv" data-en="Your product,<br>in a <span class='it'>movie trailer.</span>" data-zh="你的产品，<br>化身<span class='it'>电影预告片</span>。">Your product,<br>in a <span class="it">movie trailer.</span></h1>
+    <p class="sub rv" data-en="Feed any 3D model with a screen into the pipeline and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a frame-deterministic <b>MP4</b>. No manual framing, no editing, no sign-up." data-zh="把任意带屏幕的 3D 模型喂进管线，就能得到一段 <b>30 秒电影感预告片</b>：可交付为可交互的单文件 <b>HTML</b>，也可导出逐帧确定的 <b>MP4</b>。无需手动取景、无需剪辑、无需注册。">Feed any 3D model with a screen into the pipeline and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a frame-deterministic <b>MP4</b>. No manual framing, no editing, no sign-up.</p>
+    <div class="hero-actions rv">
+      <a class="btn btn-primary" href="https://github.com/Cottzz/product-trailer">
+        <span data-en="Get product-trailer" data-zh="获取 product-trailer">Get product-trailer</span>
+        <span class="arr">→</span>
+      </a>
+      <a class="btn btn-ghost" href="calibrate/">
+        <span data-en="Try the calibration workbench" data-zh="试用校准工作台">Try the calibration workbench</span>
+      </a>
+    </div>
+    <div class="hero-stats rv">
+      <div class="stat">
+        <div class="num">30<em>s</em></div>
+        <div class="lbl" data-en="Cinematic cut" data-zh="电影感成片">Cinematic cut</div>
+      </div>
+      <div class="stat">
+        <div class="num">2</div>
+        <div class="lbl" data-en="Outputs · HTML + MP4" data-zh="双轨产出 · HTML + MP4">Outputs · HTML + MP4</div>
+      </div>
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="lbl" data-en="Plain-JSON contracts" data-zh="纯 JSON 契约">Plain-JSON contracts</div>
+      </div>
+      <div class="stat">
+        <div class="num">0</div>
+        <div class="lbl" data-en="Manual keyframing" data-zh="手动关键帧">Manual keyframing</div>
+      </div>
+    </div>
+  </div>
+</header>
 
-  <section class="playground">
-    <h2 data-en="Make your own" data-zh="制作你自己的预告片">Make your own</h2>
-    <p data-en="Grab a CC0 GLB model with a screen, calibrate the display mesh in the browser playground, write a storyboard and a screen-content script, and render — no sign-up, GLB in, trailer out." data-zh="找一个带屏幕的 CC0 GLB 模型，在浏览器工作台里校准屏幕 mesh，再写好分镜和屏幕内容脚本，然后渲染——无需注册，GLB 进、成片出。">Grab a CC0 GLB model with a screen, calibrate the display mesh in the browser playground, write a storyboard and a screen-content script, and render — no sign-up, GLB in, trailer out.</p>
-    <a class="btn btn-ghost" href="../calibrate/" data-en="Open the calibration playground →" data-zh="打开校准工作台 →">Open the calibration playground →</a>
-  </section>
-
-  <footer>
-    <p data-en="Media on this page is hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and is never committed to git. Regenerate it with <code>tools/pt_render_materials.sh</code>." data-zh="本页媒体以 <strong>GitHub Release 资产</strong>（<code>gallery-media</code>）的形式托管，不会提交到 git；可用 <code>tools/pt_render_materials.sh</code> 全部重新生成。">Media on this page is hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and is never committed to git. Regenerate it with <code>tools/pt_render_materials.sh</code>.</p>
-    <p data-en="Built with product-trailer · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>" data-zh="由 product-trailer 构建 · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>">Built with product-trailer · <a href="https://github.com/Cottzz/product-trailer">github.com/Cottzz/product-trailer</a></p>
-  </footer>
-
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee-track"></div>
 </div>
+
+<section class="contracts sec-pad" id="contracts">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow" data-en="The engine" data-zh="引擎内核">The engine</div>
+      <h2 data-en="Three files.<br><span class='it'>One deterministic trailer.</span>" data-zh="三个文件，<br><span class='it'>一条确定性预告片。</span>">Three files.<br><span class="it">One deterministic trailer.</span></h2>
+      <p class="sec-sub" data-en="Every cut is driven by three plain-JSON contracts — swap the model, rewrite the screen content, and the same camera language renders a brand-new film." data-zh="每一刀都由三个纯 JSON 契约驱动：换掉模型、改写屏幕内容，同一套镜头语言就能渲染出全新的片子。">Every cut is driven by three plain-JSON contracts — swap the model, rewrite the screen content, and the same camera language renders a brand-new film.</p>
+    </div>
+    <div class="c-grid">
+      <div class="c-card rv">
+        <span class="idx"><b>01</b> / CONTRACT</span>
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M9 21h6M12 17v4"/></svg>
+        </div>
+        <h3 data-en="The model" data-zh="模型契约">The model</h3>
+        <p class="file">model.manifest.json</p>
+        <p data-en="Normalize any GLB with a screen: orientation, scale, and which mesh is the display. The engine aims every shot at the screen for you." data-zh="归一化任意带屏幕的 GLB：朝向、尺寸、哪块 mesh 是屏幕。引擎自动让每一个镜头对准屏幕。">Normalize any GLB with a screen: orientation, scale, and which mesh is the display. The engine aims every shot at the screen for you.</p>
+      </div>
+      <div class="c-card rv">
+        <span class="idx"><b>02</b> / CONTRACT</span>
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h7M7 17h4"/></svg>
+        </div>
+        <h3 data-en="The storyboard" data-zh="分镜契约">The storyboard</h3>
+        <p class="file">storyboard.json</p>
+        <p data-en="Camera moves as spherical keyframes — push-in, orbit, crane — with fade timings. The same storyboard re-renders identically, frame for frame." data-zh="相机运动用球坐标关键帧表达：推近、环绕、升降，加上淡入淡出时序。同一份分镜重渲，逐帧一致。">Camera moves as spherical keyframes — push-in, orbit, crane — with fade timings. The same storyboard re-renders identically, frame for frame.</p>
+      </div>
+      <div class="c-card rv">
+        <span class="idx"><b>03</b> / CONTRACT</span>
+        <div class="ico">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9l2 2-2 2M13 13h3"/></svg>
+        </div>
+        <h3 data-en="The screen" data-zh="内容契约">The screen</h3>
+        <p class="file">PTContent</p>
+        <p data-en="A pure function of time: what the screen shows at every frame — a terminal session, an auto-scrolling landing page, anything you can draw on canvas." data-zh="它是时间的纯函数：每一帧屏幕上显示什么——一段终端会话、一个自动滚动的落地页，任何能画在 canvas 上的东西。">A pure function of time: what the screen shows at every frame — a terminal session, an auto-scrolling landing page, anything you can draw on canvas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-pad" id="films">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow" data-en="Selected work" data-zh="作品展示">Selected work</div>
+      <h2 data-en="Rendered by the pipeline,<br><span class='it'>not edited by hand.</span>" data-zh="全部由管线渲染，<br><span class='it'>没有一刀是手剪的。</span>">Rendered by the pipeline,<br><span class="it'>not edited by hand.</span></h2>
+      <p class="sec-sub" data-en="Hover a poster to preview the vertical cut — every trailer here is generated end-to-end from the three contracts." data-zh="悬停海报即可预览竖屏成片——这里每一条预告片，都是从三契约端到端生成的。">Hover a poster to preview the vertical cut — every trailer here is generated end-to-end from the three contracts.</p>
+    </div>
+    <div class="f-grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="flow sec-pad" id="workflow">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow" data-en="Workflow" data-zh="制作流程">Workflow</div>
+      <h2 data-en="From GLB to <span class='it'>red carpet</span>." data-zh="从 GLB 到<span class='it'>首映礼</span>。">From GLB to <span class="it">red carpet</span>.</h2>
+      <p class="sec-sub" data-en="No sign-up, no cloud queue. The whole pipeline runs locally and open-source." data-zh="无需注册、没有云端排队，整条管线在本地、以开源方式运行。">No sign-up, no cloud queue. The whole pipeline runs locally and open-source.</p>
+    </div>
+    <div class="steps">
+      <div class="step rv">
+        <span class="n">01</span>
+        <h4 data-en="Calibrate the model" data-zh="校准模型">Calibrate the model</h4>
+        <p data-en="Load a GLB with a screen, pick the display mesh in the browser workbench, export <code>model.manifest.json</code>." data-zh="载入带屏幕的 GLB，在浏览器工作台里点选屏幕 mesh，导出 <code>model.manifest.json</code>。">Load a GLB with a screen, pick the display mesh in the browser workbench, export <code>model.manifest.json</code>.</p>
+      </div>
+      <div class="step rv">
+        <span class="n">02</span>
+        <h4 data-en="Storyboard the shots" data-zh="编排分镜">Storyboard the shots</h4>
+        <p data-en="Write <code>storyboard.json</code>: camera keyframes, focal lengths, fades. Or start from a shipped example." data-zh="编写 <code>storyboard.json</code>：相机关键帧、焦距、淡入淡出；也可以直接从范例改起。">Write <code>storyboard.json</code>: camera keyframes, focal lengths, fades. Or start from a shipped example.</p>
+      </div>
+      <div class="step rv">
+        <span class="n">03</span>
+        <h4 data-en="Script the screen" data-zh="编写屏幕内容">Script the screen</h4>
+        <p data-en="A <code>PTContent</code> template draws each frame — terminal, landing page, or your own canvas logic." data-zh="用 <code>PTContent</code> 模板绘制每一帧：终端、落地页，或你自己的 canvas 逻辑。">A <code>PTContent</code> template draws each frame — terminal, landing page, or your own canvas logic.</p>
+      </div>
+      <div class="step rv">
+        <span class="n">04</span>
+        <h4 data-en="Render the trailer" data-zh="渲染成片">Render the trailer</h4>
+        <p data-en="Preview the live HTML, then export a deterministic MP4 — vertical 9:16 or horizontal 16:9." data-zh="先预览可交互 HTML，再导出确定性 MP4：竖屏 9:16 或横屏 16:9。">Preview the live HTML, then export a deterministic MP4 — vertical 9:16 or horizontal 16:9.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta sec-pad">
+  <div class="wrap">
+    <div class="cta-band rv">
+      <h2 data-en="Give your product the <span class='it'>trailer treatment</span>." data-zh="给你的产品，<span class='it'>拍一支预告片</span>。">Give your product the <span class="it">trailer treatment</span>.</h2>
+      <p data-en="Clone the repo, calibrate your first model in the browser, and ship a cinematic cut tonight." data-zh="克隆仓库，在浏览器里校准你的第一个模型，今晚就能剪出一条电影感成片。">Clone the repo, calibrate your first model in the browser, and ship a cinematic cut tonight.</p>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="https://github.com/Cottzz/product-trailer">
+          <span data-en="Star it on GitHub" data-zh="去 GitHub 加星">Star it on GitHub</span>
+          <span class="arr">→</span>
+        </a>
+        <a class="btn btn-ghost" href="../calibrate/">
+          <span data-en="Open the calibration workbench →" data-zh="打开校准工作台 →">Open the calibration workbench →</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <span class="mark">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px">
+              <rect x="5" y="8" width="22" height="14" rx="2.2" stroke="#E8B04B" stroke-width="1.7"/>
+              <path d="M13 26h6M16 22v4" stroke="#57C7E8" stroke-width="1.7" stroke-linecap="round"/>
+              <circle cx="16" cy="15" r="2.6" fill="#E8B04B"/>
+            </svg>
+          </span>
+          <span class="name">product<em>-</em>trailer</span>
+        </a>
+        <p data-en="An open-source cinematic trailer engine for any 3D product with a screen. Licensed Apache-2.0." data-zh="开源的 3D 产品电影预告片引擎，适用于任何带屏幕的产品。Apache-2.0 许可。">An open-source cinematic trailer engine for any 3D product with a screen. Licensed Apache-2.0.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5 data-en="Project" data-zh="项目">Project</h5>
+          <a href="https://github.com/Cottzz/product-trailer" data-en="GitHub repository" data-zh="GitHub 仓库">GitHub repository</a>
+          <a href="https://github.com/Cottzz/product-trailer/releases" data-en="Releases" data-zh="发布版本">Releases</a>
+          <a href="#films" data-en="Gallery" data-zh="作品展示">Gallery</a>
+        </div>
+        <div class="foot-col">
+          <h5 data-en="Tools" data-zh="工具">Tools</h5>
+          <a href="../calibrate/" data-en="Calibration workbench" data-zh="校准工作台">Calibration workbench</a>
+          <a href="https://github.com/Cottzz/product-trailer#readme" data-en="Documentation" data-zh="使用文档">Documentation</a>
+          <a href="assets/README.md" data-en="Asset prompt kit" data-zh="素材提示词手册">Asset prompt kit</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-note">
+      <p data-en="Demo videos are hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and are never committed to git; regenerate everything with <code>tools/pt_render_materials.sh</code>. The self-dogfooding cut renders on a real 14-inch MacBook Pro used for rendering only — its 3D model is never redistributed; Apple and MacBook are trademarks of Apple Inc., and this project is not affiliated with or endorsed by Apple." data-zh="演示视频以 <strong>GitHub Release 资产</strong>（<code>gallery-media</code>）形式托管，不会提交到 git；可用 <code>tools/pt_render_materials.sh</code> 全部重新生成。项目自用片渲染于真实的 14 英寸 MacBook Pro，该模型仅用于渲染、不再分发；Apple 与 MacBook 为 Apple Inc. 商标，本项目与其无任何官方关联或背书关系。">Demo videos are hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and are never committed to git; regenerate everything with <code>tools/pt_render_materials.sh</code>. The self-dogfooding cut renders on a real 14-inch MacBook Pro used for rendering only — its 3D model is never redistributed; Apple and MacBook are trademarks of Apple Inc., and this project is not affiliated with or endorsed by Apple.</p>
+      <p data-en="Built with product-trailer · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>" data-zh="由 product-trailer 构建 · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>">Built with product-trailer · <a href="https://github.com/Cottzz/product-trailer">github.com/Cottzz/product-trailer</a></p>
+    </div>
+  </div>
+</footer>
 
 <script>
 (function () {
   var REL = 'https://github.com/Cottzz/product-trailer/releases/download/gallery-media/';
+  var LOCAL = 'assets/';
+
   var ITEMS = [
     {
       id: 'dogfood', tag: 'terminal template',
+      poster: 'poster-dogfood.jpg',
+      fallbackPoster: 'dogfood-poster-1.jpg',
       title: { en: 'Self dogfooding', zh: '项目自用演示' },
       desc: {
         en: 'The project pitches itself in a cinematic terminal session, rendered on a real 14-inch MacBook Pro. The model is used for rendering only and is never redistributed.',
@@ -153,6 +551,8 @@
     },
     {
       id: 'sellerscope', tag: 'terminal template',
+      poster: 'poster-sellerscope.jpg',
+      fallbackPoster: 'sellerscope-poster-1.jpg',
       title: { en: 'SellerScope demo', zh: 'SellerScope 示例' },
       desc: {
         en: 'A trailer for an Amazon product-research assistant, built entirely with the terminal PTContent template and the three-contract pipeline (manifest, storyboard, content).',
@@ -161,20 +561,26 @@
     },
     {
       id: 'landing', tag: 'web-scroll template',
+      poster: 'poster-landing.jpg',
+      fallbackPoster: 'landing-poster-1.jpg',
       title: { en: 'Landing page auto-scroll', zh: '落地页自动滚动' },
       desc: {
-        en: 'A mock browser window auto-scrolls a product landing page: the cursor glides, clicks ripple, and the finale lands as a DOM overlay. A second content template, showing the contract is reusable.',
+        en: 'A mock browser window auto-scrolls a product landing page: the cursor glides, clicks ripple, and the finale lands as a DOM overlay. A second content template, proving the contract is reusable.',
         zh: '模拟浏览器窗口自动滚动产品落地页：光标滑行、点击泛起涟漪，结尾以 DOM 覆盖层收束。这是第二个内容模板，证明三契约可以复用。'
       }
     }
   ];
 
   var L = {
-    'play-cta': { en: '▶ Hover to preview', zh: '▶ 悬停预览' },
+    'play-cta': { en: 'Hover to preview', zh: '悬停预览' },
     'live-html': { en: 'Live HTML cut', zh: '在线 HTML 版' },
     'vertical': { en: 'Vertical 9:16', zh: '竖屏 9:16' },
     'horizontal': { en: 'Horizontal 16:9', zh: '横屏 16:9' },
-    'doc-title': { en: 'product-trailer — gallery', zh: 'product-trailer — 作品展示' }
+    'doc-title': { en: 'product-trailer — gallery', zh: 'product-trailer — 作品展示' },
+    'marquee': {
+      en: ['30-second cinematic cuts', 'Live single-file HTML', 'Frame-deterministic MP4', 'Three JSON contracts', 'Vertical 9:16 & horizontal 16:9', 'Zero manual keyframing', 'Runs locally, open source'],
+      zh: ['30 秒电影感成片', '单文件 HTML 即播', '逐帧确定的 MP4', '三个 JSON 契约', '竖屏 9:16 与横屏 16:9', '零手动关键帧', '本地运行、完全开源']
+    }
   };
 
   var lang = 'en';
@@ -198,6 +604,16 @@
     document.title = L['doc-title'][lang];
     document.documentElement.lang = (lang === 'zh' ? 'zh-CN' : 'en');
     langBtn.textContent = (lang === 'zh' ? 'EN' : '中文');
+    buildMarquee();
+  }
+
+  function buildMarquee() {
+    var track = document.getElementById('marquee-track');
+    var words = L['marquee'][lang];
+    var unit = words.map(function (w) {
+      return '<span>' + w + ' <i>✦</i></span>';
+    }).join('');
+    track.innerHTML = unit + unit;
   }
 
   function cardLinks(it) {
@@ -209,23 +625,49 @@
       '<a href="' + REL + it.id + '-horizontal.mp4">' + L['horizontal'][lang] + '</a>';
   }
 
-  ITEMS.forEach(function (it) {
+  ITEMS.forEach(function (it, idx) {
     var card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'film rv';
 
     var media = document.createElement('div');
-    media.className = 'card-media';
+    media.className = 'f-media';
+
+    var poster = document.createElement('img');
+    poster.className = 'poster';
+    poster.alt = '';
+    /* local AI asset first; fall back to Release render frame */
+    poster.src = LOCAL + it.poster;
+    poster.addEventListener('error', (function (p) {
+      return function () {
+        if (p.src.indexOf(REL) === -1) { p.src = REL + it.fallbackPoster; }
+      };
+    })(poster));
+
     var video = document.createElement('video');
-    video.src = REL + it.id + '-vertical.mp4';
-    video.poster = REL + it.id + '-poster-1.jpg';
     video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'none';
+    video.setAttribute('aria-label', it.title.en);
+    /* use the visible poster while the video is idle */
+    video.poster = LOCAL + it.poster;
+    video.addEventListener('error', function () { video.poster = REL + it.fallbackPoster; });
+    video.src = REL + it.id + '-vertical.mp4';
+
     var cta = document.createElement('span');
     cta.className = 'play-cta';
-    cta.textContent = L['play-cta'][lang];
+    cta.innerHTML = '<span class="tri"></span><span class="cta-txt">' + L['play-cta'][lang] + '</span>';
+
     var tag = document.createElement('span');
-    tag.className = 'tag';
+    tag.className = 'f-tag';
     tag.textContent = it.tag;
-    media.appendChild(video); media.appendChild(cta); media.appendChild(tag);
+
+    var fmt = document.createElement('span');
+    fmt.className = 'f-format';
+    fmt.textContent = '9:16';
+
+    media.appendChild(poster);
+    media.appendChild(video);
+    media.appendChild(cta);
+    media.appendChild(tag);
+    media.appendChild(fmt);
 
     media.addEventListener('mouseenter', function () {
       video.play().then(function () { media.classList.add('playing'); })['catch'](function () {});
@@ -235,18 +677,18 @@
     });
     /* tap to toggle on touch devices */
     media.addEventListener('click', function () {
-      if (video.paused) { video.play()['catch'](function(){}); media.classList.add('playing'); }
+      if (video.paused) { video.play()['catch'](function () {}); media.classList.add('playing'); }
       else { video.pause(); media.classList.remove('playing'); }
     });
 
     var body = document.createElement('div');
-    body.className = 'card-body';
+    body.className = 'f-body';
     var h3 = document.createElement('h3');
     h3.textContent = it.title[lang];
     var p = document.createElement('p');
     p.textContent = it.desc[lang];
     var links = document.createElement('div');
-    links.className = 'card-links';
+    links.className = 'f-links';
     links.innerHTML = cardLinks(it);
     body.appendChild(h3); body.appendChild(p); body.appendChild(links);
 
@@ -257,12 +699,13 @@
   });
 
   function applyCards() {
-    var cards = grid.querySelectorAll('.card');
+    var cards = grid.querySelectorAll('.film');
     for (var i = 0; i < cards.length; i++) {
       var els = cards[i]._els;
       els.h3.textContent = els.it.title[lang];
       els.p.textContent = els.it.desc[lang];
-      els.cta.textContent = L['play-cta'][lang];
+      var ctaTxt = els.cta.querySelector('.cta-txt');
+      if (ctaTxt) ctaTxt.textContent = L['play-cta'][lang];
       els.links.innerHTML = cardLinks(els.it);
     }
   }
@@ -278,7 +721,50 @@
     apply();
   });
 
+  /* hero image: local AI asset first, Release render frame as fallback */
+  var heroImg = document.getElementById('hero-img');
+  var heroTried = false;
+  heroImg.addEventListener('load', function () { heroImg.classList.add('on'); });
+  heroImg.addEventListener('error', function () {
+    if (!heroTried) {
+      heroTried = true;
+      heroImg.src = REL + 'dogfood-banner.jpg';
+    }
+  });
+  heroImg.src = LOCAL + 'hero-cinematic.jpg';
+
+  /* nav background on scroll */
+  var topnav = document.getElementById('topnav');
+  function onScroll() {
+    if (window.scrollY > 40) topnav.classList.add('scrolled');
+    else topnav.classList.remove('scrolled');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* staggered scroll reveal */
+  function observeReveals() {
+    var rvs = document.querySelectorAll('.rv');
+    if (!('IntersectionObserver' in window)) {
+      for (var i = 0; i < rvs.length; i++) rvs[i].classList.add('in');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var sibs = e.target.parentNode ? e.target.parentNode.querySelectorAll(':scope > .rv') : null;
+          var order = sibs ? Array.prototype.indexOf.call(sibs, e.target) : 0;
+          if (order > 0) e.target.style.transitionDelay = (order * 90) + 'ms';
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    for (var j = 0; j < rvs.length; j++) io.observe(rvs[j]);
+  }
+
   apply();
+  observeReveals();
 })();
 </script>
 </body>
