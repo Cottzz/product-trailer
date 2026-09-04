@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """ci_export.py — M4′ acceptance gate for deterministic MP4 export.
 
-Verifies the double-track export path end to end:
-  pt_build (dogfood contracts) -> pt_export_mp4 (both orientations, short
+Verifies the double-track export path end to end for EVERY shipped
+PTContent template / example pair:
+  pt_build (example contracts) -> pt_export_mp4 (both orientations, short
   clip via --max-frames) -> ffprobe structural assertions.
 
-Checks per orientation:
+Checks per case per orientation:
   * mp4 exists and is non-trivial in size
   * video stream: h264, exact 1080x1920 / 1920x1080, yuv420p, 30 fps
   * audio stream: aac, 48000 Hz, 2 channels
@@ -14,6 +15,7 @@ Checks per orientation:
 
 Usage: python3 tools/ci_export.py
 """
+import json
 import os
 import subprocess
 import sys
@@ -31,6 +33,19 @@ FPS = 30
 SR = 48000
 MAX_FRAMES = 12
 
+# (case name, manifest, storyboard, content files [cfg..., template])
+CASES = [
+    ('dogfood/terminal',
+     os.path.join(ROOT, 'examples', 'dogfood', 'model.manifest.json'),
+     os.path.join(ROOT, 'examples', 'dogfood', 'storyboard.json'),
+     [os.path.join(ROOT, 'content', 'terminal', 'content.js')]),
+    ('landing/web-scroll',
+     os.path.join(ROOT, 'examples', 'landing', 'model.manifest.json'),
+     os.path.join(ROOT, 'examples', 'landing', 'storyboard.json'),
+     [os.path.join(ROOT, 'examples', 'landing', 'content.js'),
+      os.path.join(ROOT, 'content', 'web-scroll', 'content.js')]),
+]
+
 
 def ffprobe_streams(path):
     out = subprocess.run(
@@ -38,27 +53,24 @@ def ffprobe_streams(path):
          'stream=codec_type,codec_name,width,height,pix_fmt,r_frame_rate,sample_rate,channels',
          '-of', 'json', path],
         capture_output=True, text=True)
-    import json
     return json.loads(out.stdout).get('streams', [])
 
 
-def main():
-    work = tempfile.mkdtemp(prefix='pt-export-gate-')
-    html = os.path.join(work, 'trailer.html')
+def gate_case(work, name, manifest, storyboard, contents):
+    html = os.path.join(work, name.replace('/', '-') + '.html')
     r = subprocess.run([sys.executable, BUILDER,
-                        '--manifest', os.path.join(ROOT, 'examples', 'dogfood', 'model.manifest.json'),
-                        '--storyboard', os.path.join(ROOT, 'examples', 'dogfood', 'storyboard.json'),
-                        '--content', os.path.join(ROOT, 'content', 'terminal', 'content.js'),
-                        '--title', 'export-gate', '--out', html],
+                        '--manifest', manifest, '--storyboard', storyboard,
+                        '--content'] + contents + ['--title', 'export-gate', '--out', html],
                        capture_output=True, text=True)
     if r.returncode != 0:
-        print('FAIL: pt_build:\n' + r.stderr); sys.exit(1)
+        print('FAIL: pt_build for %s:\n%s' % (name, r.stderr))
+        return False
 
     ok = True
     for orient, (W, H) in ORIENT.items():
-        print('\n— export orientation: %s (%dx%d) —' % (orient, W, H))
-        mp4 = os.path.join(work, 'out-%s.mp4' % orient)
-        wav = os.path.join(work, 'out-%s.wav' % orient)
+        print('\n— %s · %s (%dx%d) —' % (name, orient, W, H))
+        mp4 = os.path.join(work, '%s-%s.mp4' % (name.replace('/', '-'), orient))
+        wav = os.path.join(work, '%s-%s.wav' % (name.replace('/', '-'), orient))
         r = subprocess.run([sys.executable, EXPORTER, '--html', html,
                             '--orientation', orient, '--out', mp4,
                             '--keep-wav', wav, '--max-frames', str(MAX_FRAMES)],
@@ -66,7 +78,9 @@ def main():
         log = r.stdout + r.stderr
         print('\n'.join('  ' + l for l in log.splitlines() if l.strip()))
         if r.returncode != 0 or not os.path.exists(mp4):
-            print('  FAIL: exporter exited %d' % r.returncode); ok = False; continue
+            print('  FAIL: exporter exited %d' % r.returncode)
+            ok = False
+            continue
 
         checks = []
         checks.append(('determinism probe IDENTICAL', 'IDENTICAL' in log and 'DIFFERS' not in log))
@@ -85,11 +99,20 @@ def main():
         checks.append(('audio %dHz stereo' % SR,
                        str(a.get('sample_rate')) == str(SR) and a.get('channels') == 2))
 
-        for name, passed in checks:
-            print('  %-32s %s' % (name, 'PASS' if passed else 'FAIL'))
+        for cname, passed in checks:
+            print('  %-32s %s' % (cname, 'PASS' if passed else 'FAIL'))
         ok = ok and all(p for _, p in checks)
+    return ok
+
+
+def main():
+    work = tempfile.mkdtemp(prefix='pt-export-gate-')
+    ok = True
+    for case in CASES:
+        ok = gate_case(work, *case) and ok
 
     print('\n==== export gate summary ====')
+    print('  cases: %s' % ', '.join(c[0] for c in CASES))
     print('  %s' % ('PASS' if ok else 'FAIL'))
     sys.exit(0 if ok else 1)
 

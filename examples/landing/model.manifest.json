@@ -1,0 +1,25 @@
+{
+  "model": {
+    "source": {
+      "type": "builtin",
+      "name": "laptop"
+    }
+  },
+  "normalize": {
+    "targetSize": 3.2
+  },
+  "rotationY": 0,
+  "screen": {
+    "mesh": "screen",
+    "resolution": {
+      "w": 1280,
+      "h": 800
+    },
+    "glowColor": "#8BE9FD"
+  },
+  "brand": {
+    "name": "product-trailer",
+    "tagline": "One GLB. One trailer. Zero edits.",
+    "version": "v0.1"
+  }
+}
