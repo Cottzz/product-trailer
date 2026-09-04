@@ -1,0 +1,17 @@
+{
+  "model": {
+    "source": { "type": "builtin", "name": "laptop" }
+  },
+  "normalize": { "targetSize": 3.2 },
+  "rotationY": 0,
+  "screen": {
+    "mesh": "screen",
+    "resolution": { "w": 1280, "h": 800 },
+    "glowColor": "#4AF626"
+  },
+  "brand": {
+    "name": "SellerScope",
+    "tagline": "One command. The whole market.",
+    "version": "v2.2"
+  }
+}

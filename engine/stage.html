@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>__TITLE__</title>
+<style>
+/* ===== Theme variables (overridden by PTContent.theme) ===== */
+:root{
+  --bg:#0A0E12; --panel:#0D141B; --line:#1F2937;
+  --green:#4AF626; --cyan:#8BE9FD; --magenta:#FF79C6;
+  --amber:#FFB86C; --slate:#6272A4;
+  --mono:'JetBrains Mono','SF Mono','Menlo','Consolas','Noto Sans Mono CJK SC',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#04060a;overflow:hidden;font-family:var(--mono)}
+.g{color:var(--green)} .c{color:var(--cyan)} .m{color:var(--magenta)}
+.a{color:var(--amber)} .s{color:var(--slate)}
+
+#webgl{position:fixed;inset:0;z-index:1;}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg, rgba(128,128,128,.025) 0 1px, transparent 1px 3px);}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:49;
+  background:radial-gradient(110% 100% at 50% 45%, transparent 58%, rgba(0,0,0,.6) 100%);}
+
+/* Full-screen content overlay (cross-fade at the end) */
+#pt-overlay{position:fixed;inset:0;z-index:30;opacity:0;pointer-events:none;
+  display:flex;flex-direction:column;background:var(--bg);}
+.pt-overlay-root{flex:1;overflow:hidden;}
+.pt-cursor{display:inline-block;width:.62em;height:1.05em;background:currentColor;vertical-align:-.15em;}
+
+/* End brand frame (content provided by PTContent.endHtml) */
+#pt-endframe{position:fixed;inset:0;z-index:40;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;}
+#pt-endframe.show{opacity:1;}
+#pt-endframe .pt-end-inner{font-family:var(--mono);white-space:pre;}
+
+/* Start overlay (content provided by PTContent.startHtml) */
+#pt-start{position:fixed;inset:0;z-index:60;background:rgba(4,6,10,.92);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  font-family:var(--mono);color:var(--green);text-align:center;cursor:pointer;}
+#pt-start .pt-bootkey{display:inline-block;width:10px;height:18px;background:currentColor;vertical-align:-3px;}
+
+/* Live mode: smooth fades. Export mode (body.pt-export) forces instant, deterministic frames. */
+body:not(.pt-export) #webgl{transition:opacity .8s ease;}
+body:not(.pt-export) #pt-overlay{transition:opacity .7s ease;}
+body:not(.pt-export) #pt-endframe{transition:opacity .9s ease;}
+body:not(.pt-export) #pt-start{transition:opacity .5s;}
+body:not(.pt-export) .pt-start-hide{opacity:0;pointer-events:none;}
+body.pt-export #pt-start{display:none;}
+body.pt-export *{pointer-events:none !important;}
+/* Cursor blink: wall-clock in live mode, driven by seek time in export (opacity set inline). */
+body:not(.pt-export) .pt-cursor{animation:pt-blink 1.05s steps(1) infinite;}
+body:not(.pt-export) .pt-bootkey{animation:pt-blink 1s steps(1) infinite;}
+@keyframes pt-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
+</style>
+</head>
+<body>
+
+<canvas id="webgl"></canvas>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+
+<div id="pt-overlay"><div class="pt-overlay-root" id="pt-overlay-root"></div></div>
+<div id="pt-endframe"><div class="pt-end-inner" id="pt-end-inner"></div></div>
+<div id="pt-start"><div id="pt-start-inner" class="pt-start-inner"></div></div>
+
+<script>/*__THREE__*/</script>
+<script>/*__GLTFLOADER__*/</script>
+<script>/*__BUILTIN_MODELS__*/</script>
+<script>
+const PT_MANIFEST=/*__MANIFEST__*/;
+const PT_STORYBOARD=/*__STORYBOARD__*/;
+</script>
+<script>/*__CONTENT__*/</script>
+<script>/*__ENGINE__*/</script>
+</body>
+</html>

@@ -12,8 +12,10 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 
 - The user has a 3D product model (`.glb`) with a screen surface and wants a
   cinematic promo / launch film / 产品宣传片 / 预告片.
+
 - The user wants screen content (a terminal boot sequence, a scrolling website,
   an app UI) shown on the device during the trailer.
+
 - The user wants either a shareable double-click HTML file or an MP4
   (portrait 1080×1920 or landscape 1920×1080, 30fps).
 
@@ -33,19 +35,26 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 ## Build & export
 
 - Single-file HTML: `python tools/pt_build.py --manifest <m> --storyboard <s> --content <c> --out trailer.html`
+
 - MP4 (deterministic): `python tools/pt_export_mp4.py --html trailer.html --orient portrait --out trailer.mp4`
   (headless Chrome via CDP `__PT.seek(t)` frame stepping + OfflineAudio + ffmpeg)
+
 - Gallery materials: `tools/pt_render_materials.sh`
 
 ## Determinism & constraints
 
 - three.js r128 global build (pinned; no ES modules, works over `file://`).
+
 - Only **uncompressed** GLB (no Draco/KTX2/meshopt) on r128.
+
 - Inline GLB soft limit ~20MB; use external-GLB mode or builtins for larger models.
+
 - Models/audio committed to the repo must be CC0/procedural — see
   `models/ATTRIBUTION.md` and `assets/audio/ATTRIBUTION.md`.
 
 ## Reference
 
 - Roadmap & contracts: `docs/PLAN.md`
+
 - Shot cards & aesthetic rules: `references/`
+

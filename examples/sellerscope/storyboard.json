@@ -1,0 +1,18 @@
+{
+  "duration": 30,
+  "orbitTarget": "screenCenter",
+  "fov": { "portrait": 38, "landscape": 42 },
+  "fades": {
+    "overlayIn": { "t": 24.5, "d": 3.0 },
+    "glOut": { "t": 27.5, "d": 0.9 },
+    "endAt": 28.6
+  },
+  "shots": {
+    "boot": 3.7,
+    "logo": 5.9,
+    "side": 9.5,
+    "front": 16.5,
+    "push": 24.5,
+    "end": 29
+  }
+}
