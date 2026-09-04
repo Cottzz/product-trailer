@@ -19,3 +19,32 @@ Rules for adding a model:
 > Procurement scratch area (`models/_procurement/`) is git-ignored. Never commit
 > a model whose license file says "Sketchfab Standard" or similar — that license
 > forbids redistributing the model files.
+
+## Local-only models (never committed, never redistributed)
+
+Third-party or branded device models — for example a **MacBook** GLB under a
+non-redistributable license (Sketchfab Standard, etc.) — may be used **locally
+only**: they appear in videos this project renders (as background, props, or
+demo footage), but their source files are **never committed to this
+repository** and **never redistributed** (no GLB, no self-contained HTML that
+inlines the GLB).
+
+Rules:
+
+1. Keep such models under `models/local/` — the entire directory is
+   git-ignored (see `.gitignore`). `models/_procurement/` is the scratch area
+   for evaluating candidates; promoted local models move to `models/local/`.
+2. Manifest/storyboard/content that reference a local model stay **out of
+   `examples/`** (examples must build from `builtin:` / CC0 sources only).
+   Keep local render jobs under a private, untracked directory (e.g.
+   `examples-local/`, also never committed).
+3. **Renders are fine, files are not.** MP4/WAV/poster outputs containing the
+   model *may* be published (Release assets, social, the dogfooding trailer);
+   the GLB itself and any single-file HTML that embeds it must not.
+4. Trademark / brand likeness (Apple, MacBook, …) is not covered by any
+   content license — keep logos out of redistributable artifacts and do not
+   imply endorsement.
+
+| File (local only) | Source | Author | License | Notes |
+|------|--------|--------|---------|-------|
+| `models/local/` | (operator-provided) | — | local-fetch / non-redistributable | Never committed; local renders only |

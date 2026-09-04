@@ -16,10 +16,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/dist/gallery"
 mkdir -p "$OUT"
 
-# name : content-template
+# name : content-template [: example cfg loaded before the template]
 EXAMPLES=(
   "dogfood:terminal"
   "sellerscope:terminal"
+  "landing:web-scroll:examples/landing/content.js"
 )
 
 # poster still times (seconds, inside the 30s timeline)
@@ -56,7 +57,8 @@ render_one() {
 }
 
 for spec in "${EXAMPLES[@]}"; do
-  render_one "${spec%%:*}" "${spec##*:}"
+  IFS=':' read -r r_name r_tpl r_cfg <<< "$spec"
+  render_one "$r_name" "$r_tpl" "$r_cfg"
 done
 
 echo

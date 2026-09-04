@@ -1,7 +1,7 @@
 # product-trailer 项目计划（审核修订版 v2）
 
-> 状态：**已通过三方独立审核（技术可行性 / 开源工程合规 / 范围与里程碑），待执行**
-> 日期：2026-09-04
+> 状态：**执行中** —— M0 / M1 / M1.5 / M2′（内置模型）/ M3′（web-scroll）/ M4′（MP4 导出 + 双范例 44 项门）已完成并推送 main；Gallery 三范例双方向物料已渲染；剩余 M5-lite / M6 与 CC0 模型非阻塞采购
+> 日期：2026-09-04（计划创建）；状态持续更新
 > 对标项目：[video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft)
 
 ## 1. 项目定位
@@ -38,6 +38,7 @@
 | F4 | 现有 MacBook 模型许可证是 **Sketchfab Standard，非 CC0** | 已下载模型 `license.txt` 原文为 "SKETCHFAB Standard"，禁止模型文件再分发；Sketchfab 的 CC0 为上传者自报、下载需登录、商标不受 CC0 覆盖 | 该模型**绝不入公开仓库**；程序化内置设备模型（three.js 代码生成风格化笔记本/手机，许可干净）兜底；CC0 采购降级非阻塞，逐模型核验 License 字段 + `models/ATTRIBUTION.md` |
 | F5 | Mixkit 免费许可禁止素材独立再分发 | 不能照搬 shotcraft 音频入仓；Kevin MacLeod 是 CC-BY 非 CC0 | BGM 改用 FreePD / Freesound CC0 / OpenGameArt CC0，1-2 首，逐首 ATTRIBUTION；或脚本按需下载不入 git |
 | F6 | Gallery/playground 撞 Pages 体积墙 | base64 内联内存峰值 5-7x，Pages 站点限 1GB | playground 上传限 ≤10-15MB 预检；预览用 Blob URL（零膨胀），导出才内联；支持 GLB 外置同目录模式 |
+| F7（补充计划） | 品牌/第三方设备模型（如 **MacBook** GLB）许可证禁止再分发，但需要出现在项目视频里 | Sketchfab Standard 等许可证仅授予下载方个人使用；商标形象不受 CC0 覆盖 | **渲染可用、源文件禁入仓**：MacBook 等模型可作为背景/道具/演示案例出现在渲染成片（MP4/poster 可发布），但 GLB 源文件与内联该 GLB 的自包含 HTML **绝不提交仓库、绝不随产物分发**；统一放 git-ignored 的 `models/local/`，引用它的工程放私有未跟踪目录（如 `examples-local/`）；`examples/` 内一切范例必须仅依赖 `builtin:` / CC0 资产；详见 `models/ATTRIBUTION.md` 的「Local-only models」 |
 
 > 事实勘误：参考关键帧实际为 **5 张** PNG（非早期计划文案所写 6 张），M1 验收以实际文件为准。
 
@@ -89,9 +90,9 @@
 | **M0** | 本地骨架 → `gh repo create Cottzz/product-trailer --public`；LICENSE/NOTICE/THIRD_PARTY_NOTICES、.claude-plugin/plugin.json、agents/openai.yaml、.gitignore、CI/Pages 配置一次推齐 | 仓库可访问，CI 骨架绿 |
 | **M1** | stage.html 槽位化 + terminal.js 抽出 + 三契约定稿（含全部 F/S 修订）+ `pt_build.py` 参数化（6 占位符）；three r128 钉死 | 四重务实门（SSIM≥0.97 / 连渲字节一致 / 事件流 diff / 契约外验） |
 | **M1.5**（新增） | **浏览器交互标定页**：加载 GLB → mesh 下拉选屏幕面 → 贴纹理预览 → 导出 manifest JSON。一题三吃：M2 标定工具 / M1 契约 dogfooding harness / M5 playground 内核 | 能用页面为内置/外置模型产出 manifest 并被引擎消费 |
-| **M2′** | 程序化内置笔记本/手机模型（圆角盒体+屏幕平面，几百行，许可干净）；CC0 模型采购转探索性非阻塞（Sketchfab 人工核验 License 字段） | 内置模型零外部资产出片 |
-| **M3′** | web-scroll 内容模板（网页滚动式屏幕内容），beta 质量可接受 | 模板出片 |
-| **M4′** | MP4 导出：`__PT.seek` 步进 + CDP `Page.captureScreenshot`（/HeadlessExperimental.beginFrame）+ OfflineAudio 音轨 + ffmpeg；竖 1080×1920 / 横 1920×1080@30；**含 GIF/MP4 物料渲染命令**供 Gallery | 确定性出片，连渲字节一致 |
+| **M2′** | ✅ 内置模型完成（builtin laptop/phone，零外部资产出片）；CC0 模型采购转探索性非阻塞（Sketchfab 人工核验 License 字段） | 内置模型零外部资产出片 |
+| **M3′** | ✅ web-scroll 内容模板（beta）：mock 浏览器窗口自动滚动落地页 + 光标滑翔/点击波纹 + 终帧 DOM overlay；landing 范例；`ci_export.py` 门扩展为双范例×双方向 44 项 | 模板出片（5 帧视觉验收 + 44/44 门 PASS） |
+| **M4′** | ✅ MP4 导出：`__PT.seek` 步进 + CDP 截图 + OfflineAudio 音轨 + ffmpeg；竖 1080×1920 / 横 1920×1080@30；`pt_render_materials.sh` 物料渲染（dogfood/sellerscope/landing × 双方向 + posters） | 确定性出片，连渲字节一致（门 PASS） |
 | **M5-lite** | GH Pages 预览墙（CI 出物料、媒体走 Release 资产）+ beta playground 挂出 | 预览墙上线 |
 | **M6** | 中英 README（内嵌成片）、SKILL.md、references 镜头卡、CI 冒烟、**自产发布预告片**、`v0.1.0` tag + Release | v0.1.0 发布 |
 
@@ -123,8 +124,10 @@ product-trailer/
 │   ├── terminal/                 # 终端模板
 │   └── web-scroll/               # 网页滚动模板
 ├── models/
-│   ├── builtin/                  # 程序化笔记本/手机（代码生成）
-│   └── ATTRIBUTION.md
+│   ├── builtin/                  # 程序化笔记本/手机（代码生成，可再分发）
+│   ├── local/                    # 【git-ignored】MacBook 等第三方模型，仅本地渲染（F7）
+│   └── ATTRIBUTION.md            # CC0 模型 + Local-only 模型策略
+├── examples-local/               # 【git-ignored，可选】引用 models/local 的私有渲染工程
 ├── assets/audio/                 # CC0 BGM + ATTRIBUTION.md
 ├── tools/
 │   ├── pt_build.py               # 单 HTML 打包（占位符替换/Blob 拼装）

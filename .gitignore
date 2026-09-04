@@ -10,11 +10,20 @@ out/
 examples/**/export/*.html
 *.selfcontained.html
 
+# Private render jobs referencing models/local (branded/third-party GLBs)
+examples-local/
+
 # Vendor / large binaries fetched on demand
 vendor-cache/
 *.glb
 !models/builtin/**/*.glb
 models/_procurement/
+
+# Third-party / branded device models (e.g. MacBook) used for LOCAL renders
+# only — as background, props or demo footage. Their source files are never
+# committed and never redistributed (self-contained HTML built from them stays
+# local). See models/ATTRIBUTION.md → "Local-only models".
+models/local/
 
 # Audio fetched on demand
 assets/audio/_downloads/
