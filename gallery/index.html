@@ -4,10 +4,203 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>product-trailer — gallery</title>
+<meta name="description" content="Drop in any 3D model with a screen — get a 30-second cinematic as live HTML or deterministic MP4.">
+<style>
+  :root {
+    --bg: #0A0E14;
+    --bg2: #0E141D;
+    --card: #111826;
+    --line: #1E2836;
+    --g: #4AF626;
+    --c: #8BE9FD;
+    --m: #FF79C6;
+    --a: #FFB86C;
+    --dim: #6272A4;
+    --fg: #E6EDF3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 80px; }
+
+  header.hero { text-align: center; margin-bottom: 56px; }
+  .kicker {
+    display: inline-block; font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--g); border: 1px solid rgba(74,246,38,.35); border-radius: 999px;
+    padding: 7px 14px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 60px); line-height: 1.05; margin: 0 0 16px;
+    font-weight: 800; letter-spacing: -0.02em;
+  }
+  h1 .tr { color: var(--c); }
+  .sub { color: var(--dim); font-size: clamp(15px, 2.2vw, 19px); max-width: 620px; margin: 0 auto; }
+  .sub b { color: var(--fg); font-weight: 600; }
+  .hero-actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 700;
+    font-size: 15px; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-m { background: var(--m); color: #160A10; box-shadow: 0 6px 24px rgba(255,121,198,.25); }
+  .btn-ghost { background: transparent; color: var(--c); border: 1px solid rgba(139,233,253,.4); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column; transition: border-color .2s ease, transform .2s ease;
+  }
+  .card:hover { border-color: rgba(139,233,253,.45); transform: translateY(-3px); }
+  .card-media { position: relative; aspect-ratio: 16 / 10; background: #000; display: grid; place-items: center; overflow: hidden; }
+  .card-media video { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
+  .card-media .tag {
+    position: absolute; top: 12px; left: 12px; z-index: 2;
+    font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em;
+    padding: 6px 10px; border-radius: 999px; background: rgba(10,14,20,.8); color: var(--a);
+    border: 1px solid rgba(255,184,108,.4); text-transform: uppercase;
+  }
+  .card-body { padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-body h3 { margin: 0; font-size: 18px; font-weight: 700; }
+  .card-body p { margin: 0; color: var(--dim); font-size: 14px; flex: 1; }
+  .card-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .card-links a {
+    font: 600 12.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--c); text-decoration: none; border: 1px solid var(--line);
+    padding: 8px 12px; border-radius: 8px; transition: border-color .15s, color .15s;
+  }
+  .card-links a:hover { border-color: var(--c); color: var(--fg); }
+  .card-links a.live { color: var(--g); border-color: rgba(74,246,38,.35); }
+  .card-links a.live:hover { border-color: var(--g); }
+
+  .play-cta {
+    position: absolute; z-index: 2; pointer-events: none;
+    font: 700 13px/1 ui-monospace, Menlo, monospace; color: #fff;
+    background: rgba(10,14,20,.65); border: 1px solid rgba(255,255,255,.3);
+    padding: 8px 14px; border-radius: 999px; backdrop-filter: blur(4px);
+    transition: opacity .2s;
+  }
+  .card-media.playing .play-cta { opacity: 0; }
+
+  section.playground {
+    margin-top: 64px; border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(180deg, var(--bg2), var(--bg));
+    padding: 36px 32px; text-align: center;
+  }
+  section.playground h2 { margin: 0 0 10px; font-size: 24px; }
+  section.playground p { color: var(--dim); margin: 0 auto 22px; max-width: 560px; }
+  footer { margin-top: 64px; text-align: center; color: var(--dim); font-size: 13px; }
+  footer code { color: var(--c); font-family: ui-monospace, Menlo, monospace; }
+</style>
 </head>
 <body>
-<h1>product-trailer gallery</h1>
-<p>The preview wall is populated in M5-lite. Preview GIFs/MP4s are hosted as
-GitHub Release assets (not committed to git).</p>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="kicker">open source · Apache-2.0 · beta</span>
+    <h1>Your product, <br>in a <span class="tr">movie trailer</span></h1>
+    <p class="sub">Drop in any 3D model with a screen — get a <b>30-second cinematic</b> as a
+      live single-file <b>HTML</b> or a deterministic <b>MP4</b>. Zero manual framing.</p>
+    <div class="hero-actions">
+      <a class="btn btn-m" href="https://github.com/Cottzz/product-trailer">Get product-trailer</a>
+      <a class="btn btn-ghost" href="calibrate/">Beta playground (calibrate)</a>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="playground">
+    <h2>Make your own</h2>
+    <p>Grab a CC0 GLB with a screen, calibrate the display mesh in the browser
+      playground, write a one-file <code>PTContent</code> storyboard, and render —
+      no sign-up, GLB in, MP4 out.</p>
+    <a class="btn btn-ghost" href="../calibrate/">Open the calibration playground →</a>
+  </section>
+
+  <footer>
+    <p>Media on this page is hosted as <strong>GitHub Release assets</strong>
+      (<code>gallery-media</code>) — never committed to git. Regenerate with
+      <code>tools/pt_render_materials.sh</code>.</p>
+    <p>Built with product-trailer · <a href="https://github.com/Cottzz/product-trailer" style="color:var(--c)">github.com/Cottzz/product-trailer</a></p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var REL = 'https://github.com/Cottzz/product-trailer/releases/download/gallery-media/';
+  var ITEMS = [
+    {
+      id: 'dogfood', tag: 'terminal template',
+      title: 'Self dogfooding',
+      desc: 'The project pitches itself in a cinematic terminal session, rendered on the procedural built-in laptop — the first thing product-trailer ever rendered.'
+    },
+    {
+      id: 'sellerscope', tag: 'terminal template',
+      title: 'SellerScope demo',
+      desc: 'An Amazon product-research assistant trailer, driven entirely by the terminal PTContent template and the three-contract pipeline (manifest · storyboard · content).'
+    },
+    {
+      id: 'landing', tag: 'web-scroll template',
+      desc: 'A mock browser window auto-scrolls a product landing page — cursor glides, clicks ripple, and the finale lands as a DOM overlay. The second content template proves the contract is reusable.',
+      title: 'Landing page auto-scroll'
+    }
+  ];
+
+  var grid = document.getElementById('grid');
+
+  ITEMS.forEach(function (it) {
+    var card = document.createElement('div');
+    card.className = 'card';
+
+    var media = document.createElement('div');
+    media.className = 'card-media';
+    var video = document.createElement('video');
+    video.src = REL + it.id + '-vertical.mp4';
+    video.poster = REL + it.id + '-poster-1.jpg';
+    video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'none';
+    var cta = document.createElement('span');
+    cta.className = 'play-cta';
+    cta.textContent = '▶ hover to preview';
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = it.tag;
+    media.appendChild(video); media.appendChild(cta); media.appendChild(tag);
+
+    media.addEventListener('mouseenter', function () {
+      video.play().then(function () { media.classList.add('playing'); })['catch'](function () {});
+    });
+    media.addEventListener('mouseleave', function () {
+      video.pause(); media.classList.remove('playing');
+    });
+    /* tap to toggle on touch devices */
+    media.addEventListener('click', function () {
+      if (video.paused) { video.play()['catch'](function(){}); media.classList.add('playing'); }
+      else { video.pause(); media.classList.remove('playing'); }
+    });
+
+    var body = document.createElement('div');
+    body.className = 'card-body';
+    body.innerHTML =
+      '<h3>' + it.title + '</h3>' +
+      '<p>' + it.desc + '</p>';
+    var links = document.createElement('div');
+    links.className = 'card-links';
+    links.innerHTML =
+      '<a class="live" href="' + REL + it.id + '.html">Live HTML cut</a>' +
+      '<a href="' + REL + it.id + '-vertical.mp4">Vertical 9:16</a>' +
+      '<a href="' + REL + it.id + '-horizontal.mp4">Horizontal 16:9</a>';
+    body.appendChild(links);
+
+    card.appendChild(media);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+})();
+</script>
 </body>
 </html>
