@@ -269,6 +269,19 @@
 
   /* ---------------- full-screen DOM overlay (finale) ---------------- */
   var ovRoot = null;
+  /* Trademark disclaimer (F8): a generic third-party trademark statement is
+     shown in the finale of every trailer by default. When a render features a
+     specific branded device (e.g. a real MacBook GLB), override it with the
+     matching text via cfg.disclaimer / brand.disclaimer (string), or set it to
+     false to hide it. */
+  var DEFAULT_DISCLAIMER =
+    '3D models shown are for feature demonstration only and are fictional. ' +
+    'All product names and trademarks are the property of their respective owners.';
+  function disclaimerText(b) {
+    var d = (cfg && cfg.disclaimer !== undefined) ? cfg.disclaimer
+      : (b && b.disclaimer !== undefined) ? b.disclaimer : DEFAULT_DISCLAIMER;
+    return d === false ? '' : String(d || DEFAULT_DISCLAIMER);
+  }
   var OVERLAY_CSS =
     '.pt-ws{position:absolute;inset:0;overflow:hidden;background:' + COL.bg + ';color:' + COL.ink + ';' +
     'font-family:"Inter","SF Pro Text",Helvetica,Arial,sans-serif;}' +
@@ -285,14 +298,18 @@
     '.pt-ws .sub{color:' + COL.s + ';font-size:clamp(14px,2.4vmin,24px);max-width:60ch;margin:0 auto;}' +
     '.pt-ws .btn{display:inline-block;margin-top:4vh;background:' + COL.m + ';color:#1A0B14;font-weight:700;' +
     'font-size:clamp(16px,2.6vmin,26px);padding:1.6vh 4vw;border-radius:999px;box-shadow:0 0 80px rgba(255,121,198,.25);}' +
+    '.pt-ws .disc{position:absolute;left:0;right:0;bottom:5.6vh;padding:.6vh 4vw;' +
+    'color:' + COL.s + ';opacity:.75;font-size:clamp(8px,1.15vmin,12px);line-height:1.45;text-align:center;}' +
     '.pt-ws .foot{position:absolute;left:0;right:0;bottom:0;padding:1.6vh 4vw;background:' + COL.panel + ';' +
     'border-top:1px solid ' + COL.line + ';color:' + COL.s + ';font-size:clamp(11px,1.6vmin,15px);' +
     'display:flex;justify-content:space-between;}';
 
-  function mountOverlay(root, brand) {
+  function mountOverlay(root, brand, b) {
     root.style.display = 'block';
     var st = document.createElement('style'); st.textContent = OVERLAY_CSS;
     ovRoot = document.createElement('div'); ovRoot.className = 'pt-ws';
+    var disc = disclaimerText(b);
+    var discBar = disc ? '<div class="disc">' + esc(disc) + '</div>' : '';
     ovRoot.innerHTML =
       '<div class="chrome"><span class="dot" style="background:#FF5F57"></span>' +
       '<span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span>' +
@@ -302,6 +319,7 @@
       '<h1>' + esc(cfg.ctaTitle || 'Ship the trailer today').replace('trailer', '<span class="b">trailer</span>') + '</h1>' +
       '<div class="sub">' + esc(cfg.ctaSub || 'One GLB, one storyboard, one command — live HTML and deterministic MP4 from a single cut.') + '</div>' +
       '<div class="btn">' + esc(cfg.ctaButton || 'Get product-trailer') + ' ▸</div></div></div>' +
+      discBar +
       '<div class="foot"><span>◆ ' + esc(brand) + ' — ' + esc(TAGLINE) + '</span><span>Apache-2.0</span></div>';
     root.appendChild(st); root.appendChild(ovRoot);
   }
@@ -325,7 +343,12 @@
       '<div id="pt-start-hint" style="color:var(--slate);font-size:11px;line-height:1.8">' +
       esc(cfg.startHint || '▶ Loading 3D model…') + '</div>';
   }
-  function endHtml(brand) {
+  function endHtml(brand, b) {
+    var disc = disclaimerText(b);
+    var discEl = disc
+      ? '<div style="position:fixed;left:0;right:0;bottom:14px;padding:6px 16px;' +
+        'color:var(--slate);font-size:11px;line-height:1.45;text-align:center;' +
+        'white-space:normal;overflow-wrap:break-word">' + esc(disc) + '</div>' : '';
     return '<div style="border:1px solid var(--line);border-radius:14px;background:var(--panel);' +
       'padding:38px 46px 30px;min-width:min(86vw,600px);box-shadow:0 0 90px rgba(139,233,253,.10);text-align:center">' +
       '<div style="font-size:clamp(22px,3.6vmin,38px);font-weight:800;letter-spacing:1px">◆ ' + esc(brand) + '</div>' +
@@ -333,7 +356,7 @@
       '<div style="display:inline-block;background:var(--magenta);color:#1A0B14;font-weight:700;' +
       'border-radius:999px;padding:10px 34px;font-size:clamp(13px,2vmin,18px)">' +
       esc(cfg.ctaButton || 'Get product-trailer') + ' ▸</div>' +
-      '<div style="color:var(--slate);font-size:12px;margin-top:20px">' + esc(URL_BAR) + '</div></div>';
+      '<div style="color:var(--slate);font-size:12px;margin-top:20px">' + esc(URL_BAR) + '</div></div>' + discEl;
   }
 
   /* ---------------- deterministic audio (live + OfflineAudioContext) ---------------- */

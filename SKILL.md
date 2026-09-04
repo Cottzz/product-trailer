@@ -23,8 +23,9 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 
 1. **Model manifest** (`model.manifest.json`) — model source (inline GLB base64,
    external `.glb`, or a builtin procedural `laptop`/`phone`), normalization,
-   `rotationY`, screen-mesh selector, `flipY`, screen aspect/resolution.
-   Produce one interactively with the calibration page (`calibrate/`).
+   `rotationY`, screen-mesh selector, `flipY`, screen aspect/resolution, and a
+   `brand` object (`name`, `tagline`, `version`, optional `disclaimer`).
+   Generate one interactively with the calibration page (`calibrate/`).
 2. **Storyboard** (`storyboard.json`) — duration, portrait/landscape fov, camera
    keyframes `[{t, az, el, d}]`, `orbitTarget` (default `screenCenter`), fades.
 3. **Content template** (PTContent) — `meta`, `buildState(t)` (pure),
@@ -61,11 +62,22 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
 
 - **Local-only models (F7):** branded or third-party GLBs whose license forbids
   redistribution (e.g. a MacBook model under Sketchfab Standard) may be used for
-  **local renders** — they can appear as background/props/demo footage in exported
-  videos — but their source files (and self-contained HTML inlining them) must
-  never be committed or redistributed. Keep them in the git-ignored
-  `models/local/`; keep private jobs referencing them in `examples-local/`.
+  **local renders** and can appear as background, props, or demo footage in
+  exported videos, but their source files (and any self-contained HTML that
+  inlines them) must never be committed or redistributed. Keep them in the
+  git-ignored `models/local/`; keep private jobs referencing them in
+  `examples-local/`.
   Everything under `examples/` must depend only on `builtin:` / CC0 assets.
+
+- **Trademark disclaimer (F8):** every trailer renders a trademark disclaimer
+  line in its finale overlay and end card. The built-in English default is a
+  **generic** third-party trademark statement (fictional models; "property of
+  their respective owners"), suitable for the procedural built-ins. When a
+  render features a specific branded model (e.g. a local MacBook GLB), override
+  it with the matching brand-specific text via `brand.disclaimer` in the
+  manifest's `brand` object (or `cfg.disclaimer` in an example content config;
+  set it to `false` to hide the line). The README files carry the Apple
+  disclaimer for the MacBook self-demo; see `models/ATTRIBUTION.md`.
 
 ## Reference
 

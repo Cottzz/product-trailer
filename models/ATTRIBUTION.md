@@ -16,7 +16,7 @@ Rules for adding a model:
 | `models/builtin/laptop` | (procedural, generated in-repo) | product-trailer contributors | Apache-2.0 (project) | Stylized generic laptop, no trademarks |
 | `models/builtin/phone`  | (procedural, generated in-repo) | product-trailer contributors | Apache-2.0 (project) | Stylized generic phone, no trademarks  |
 
-> Procurement scratch area (`models/_procurement/`) is git-ignored. Never commit
+> The procurement scratch area (`models/_procurement/`) is git-ignored. Never commit
 > a model whose license file says "Sketchfab Standard" or similar — that license
 > forbids redistributing the model files.
 
@@ -39,8 +39,8 @@ Rules:
    Keep local render jobs under a private, untracked directory (e.g.
    `examples-local/`, also never committed).
 3. **Renders are fine, files are not.** MP4/WAV/poster outputs containing the
-   model *may* be published (Release assets, social, the dogfooding trailer);
-   the GLB itself and any single-file HTML that embeds it must not.
+   model *may* be published (Release assets, social media, the self-demo
+   trailer); the GLB itself and any single-file HTML that embeds it must not.
 4. Trademark / brand likeness (Apple, MacBook, …) is not covered by any
    content license — keep logos out of redistributable artifacts and do not
    imply endorsement.
@@ -48,4 +48,31 @@ Rules:
 | File (local only) | Source              | Author | License                           | Notes                               |
 | ----------------- | ------------------- | ------ | --------------------------------- | ----------------------------------- |
 | `models/local/`   | (operator-provided) | —      | local-fetch / non-redistributable | Never committed; local renders only |
+
+## Trademark disclaimer in rendered videos
+
+Every trailer this project renders carries a trademark disclaimer line in its
+finale overlay and its end card (the final frozen frame). The content templates
+(`content/terminal/content.js`, `content/web-scroll/content.js`, constant
+`DEFAULT_DISCLAIMER`) ship a **generic** English default that applies to the
+procedural built-in models and any fictional device:
+
+> 3D models shown are for feature demonstration only and are fictional. All
+> product names and trademarks are the property of their respective owners.
+
+Renders featuring a specific branded model must **override** the default with
+the matching brand-specific text — that text lives with the render job, never
+in the shared templates. For example, the self-demo trailer rendered on a real
+MacBook GLB sets this English line via `brand.disclaimer` in its (git-ignored,
+local-only) manifest:
+
+> 3D models shown are for feature demonstration only. MacBook and its
+> industrial design and trademarks are the property of Apple Inc. This project
+> is not affiliated with or endorsed by Apple Inc.
+
+Set the text via `brand.disclaimer` in `model.manifest.json` (or
+`cfg.disclaimer` in an example's content config; set it to `false` to hide the
+line entirely). References: Apple's [Guidelines for Using Apple Trademarks and
+Copyrights](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html)
+([中文](https://www.apple.com.cn/legal/intellectual-property/guidelinesfor3rdparties.html)).
 

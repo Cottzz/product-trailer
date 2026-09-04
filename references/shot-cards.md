@@ -1,9 +1,9 @@
 # Shot cards & aesthetic rules
 
 The 30-second trailer is a fixed five-beat arc. Content templates plug screen
-behaviour into this arc; the camera is driven by spherical keyframes around the
+behavior into this arc; the camera is driven by spherical keyframes around the
 screen center (`orbitTarget: "screenCenter"`, F1). This file is the reference
-for tuning storyboards without re-discovering why each beat works.
+for tuning storyboards without rediscovering why each beat works.
 
 ## Beat sheet (canonical timings)
 
@@ -13,7 +13,7 @@ for tuning storyboards without re-discovering why each beat works.
 | **Logo / turn** | 3.7–9.5 | Orbit continues, closing in (az ~46–69°) | Boot log / hero scroll begins | Motion sells the 3D model |
 | **Side / profile** | 9.5–16.5 | Near-profile (az ~16–18°), closest medium d | Main demo content (terminal commands / feature cards) | "Product at work" — content legible |
 | **Front / hero** | 16.5–24.5 | Dead front (az 0°, el 3–4°), slow push (d 8.2→3.5 portrait) | Stats / payoff content | Head-on hero frame for screenshots |
-| **Finale** | 24.5–29 | Settled, slight push; overlay fades in at 24.5 (3.0s); GL fades out 27.5 (0.9s); end 28.6 | Full-screen DOM overlay: tagline + CTA | Conversion beat |
+| **Finale** | 24.5–29 | Settled, slight push; overlay fades in at 24.5 (3.0s); GL fades out at 27.5 (0.9s); ends at 28.6 | Full-screen DOM overlay: tagline + CTA | Conversion beat |
 
 `storyboard.json` declares beat boundaries as `"shots": {boot, logo, side, front, push, end}`;
 content templates read these times to schedule their own events. Keep beats in
@@ -52,16 +52,17 @@ wrong in one orientation.
    during the settled front beat let content do the talking.
 2. **Screen legibility beats realism.** Never frame past az ~75° for long; the
    profile beat (~16–18°) is the most oblique angle where text stays readable.
-3. **Fades are punctuation, not transitions between shots.** The only cross-fade
-   is the finale overlay (24.5s) and the GL fade-out (27.5s). Beats connect on
-   continuous camera motion.
+3. **Fades are punctuation, not transitions between shots.** The only fades are
+   the finale overlay cross-fade (24.5s) and the GL fade-out (27.5s). Beats
+   connect through continuous camera motion.
 4. **Audio cues land on beat boundaries** (boot whoosh at 0, finale whoosh at
-   ~24.5, end sting before 28.6). Schedule via `scheduleAudio(ctx, duration, gain)`
-   with both live `AudioContext` and `OfflineAudioContext` paths (F2) — never use
-   wall-clock scheduling.
-5. **No wall-clock anything in content.** CSS animations, blinking cursors and
-   randomness must be driven by `buildState(t)` / the `pt-export` class, or MP4
-   export loses determinism.
+   ~24.5, end sting before 28.6). Schedule via
+   `scheduleAudio(ctx, startTime, duration, gain)` in both the live
+   `AudioContext` and the `OfflineAudioContext` (F2); never use wall-clock
+   scheduling.
+5. **No wall-clock anything in content.** CSS animations, blinking cursors, and
+   randomness must be driven by `buildState(t)` / the `pt-export` class, or the
+   MP4 export loses determinism.
 6. **Poster frames** (captured at 3.7 / 9.5 / 16.5 / 24.5s by
    `pt_render_materials.sh`) double as beat QA: each poster should read as a
    complete composition on its own.
@@ -74,6 +75,6 @@ wrong in one orientation.
 - Render posters at the four beat times and view them in order — the arc should
   read: *device → motion → product at work → hero → CTA*.
 - Run `tools/ci_export.py` — 44 gates (2 examples × 2 orientations × 11 checks)
-  cover frame stepping, audio and output integrity.
+  cover frame stepping, audio, and output integrity.
 - New templates: keep event times inside the beat boundaries above; remap only if
   the storyboard's `shots` table changes too.

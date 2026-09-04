@@ -51,7 +51,8 @@ def mean_luminance(png):
 def open_page(p, html, width=1280, height=720):
     page = p.chromium.launch(args=[
         '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
-        '--no-sandbox', '--force-color-profile=srgb']).new_page(
+        '--no-sandbox', '--force-color-profile=srgb',
+        '--run-all-compositor-stages-before-draw']).new_page(
         viewport={'width': width, 'height': height})
     errors = []
     page.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)

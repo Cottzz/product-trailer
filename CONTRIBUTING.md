@@ -19,11 +19,12 @@ python tools/ci_smoke.py
 
 A PTContent template implements `meta`, `buildState(t)`, `drawScreen`, `theme`,
 `startHtml`/`endHtml`, `mountOverlay`/`updateOverlay`, and `scheduleAudio`.
-`buildState` must be a pure function of time (no wall clock, no `Math.random`,
-no `setTimeout`) so MP4 export is deterministic. See `docs/PLAN.md` §4.
+`buildState` must be a pure function of time (no wall-clock timing, no
+`Math.random`, no `setTimeout`) so MP4 export is deterministic. See
+`docs/PLAN.md` §4.
 
 ## Adding a model or audio
 
 Only CC0 / public-domain or in-repo procedural assets may be committed.
 Record every asset in `models/ATTRIBUTION.md` or `assets/audio/ATTRIBUTION.md`
-with source URL, author, and the license as shown on the source page.
+with its source URL, author, and license as shown on the source page.

@@ -7,42 +7,43 @@
 
 [**🎬 Watch the gallery**](https://cottzz.github.io/product-trailer/gallery/) · [Get started](#quickstart) · [中文说明](README.zh-CN.md)
 
-[![product-trailer gallery: a cinematic terminal trailer rendered on a 3D laptop](https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-poster-1.jpg)](https://cottzz.github.io/product-trailer/gallery/)
+[![product-trailer: a cinematic terminal trailer rendered on a 3D MacBook](https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-banner.jpg)](https://cottzz.github.io/product-trailer/gallery/)
 
 <video controls muted preload="none" width="480" poster="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-poster-1.jpg">
   <source src="https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-vertical.mp4" type="video/mp4">
   [▶ Watch the vertical trailer](https://github.com/Cottzz/product-trailer/releases/download/gallery-media/dogfood-vertical.mp4)
 </video>
 
-Give it a 3D model with a display (laptop, phone, kiosk, TV …) and screen
-content (a terminal session, a scrolling landing page, anything drawable on a
-canvas), and it produces a ~30-second cinematic promo — side reveal →
-turn-to-front → hero push-in → screen cross-fade → brand end frame. Portrait
-9:16 and landscape 16:9 from the same cut.
+Give it a 3D model with a display (laptop, phone, kiosk, TV, and so on) and
+screen content (a terminal session, a scrolling landing page, anything you can
+draw on a canvas), and it produces a ~30-second cinematic promo: a side reveal,
+a turn to the front, a hero push-in, a screen cross-fade, and a brand end
+frame. Both portrait 9:16 and landscape 16:9 come from the same cut.
 
 ## Why
 
 Launch videos for dev tools are slow to make and impossible to keep in sync
 with the product. product-trailer turns a **3D model + a screen-content
-script** into a reproducible build artifact — regenerate the trailer every
-release, identical byte-for-byte, with zero manual video editing.
+script** into a reproducible build artifact — regenerate the trailer on every
+release, byte-for-byte identical, with zero manual video editing.
 
 ## Highlights
 
-- **Dual first-class outputs** — a zero-dependency **single HTML file**
-  (three.js r128 inlined, double-click `file://` to play) and a
-  **deterministic MP4** (headless Chrome frame-stepping via `__PT.seek(t)` +
-  OfflineAudio mix + ffmpeg). Same cut, re-rendered twice, byte-identical.
+- **Two outputs from one cut** — a zero-dependency **single HTML file**
+  (three.js r128 inlined; just double-click it to play over `file://`, no
+  server required) and a **deterministic MP4** (headless Chrome
+  frame-stepping via `__PT.seek(t)`, an OfflineAudio mix, and ffmpeg). Render
+  the same cut twice and the two MP4s are byte-identical.
 - **Three contracts, independently swappable** —
   [`model.manifest.json`](#1-the-model-contract) (model source, screen mesh,
   normalization), `storyboard.json` (camera keyframes, fov, fades), and a
-  `PTContent` template (pure `buildState(t)` + `drawScreen()`).
-- **Batteries included** — procedural built-in laptop & phone models (no
-  external assets, no license risk), two content templates (`terminal`,
-  `web-scroll`), a browser **calibration playground** to target the screen
-  mesh on any GLB.
-- **Agent-ready** — installable as a skill for Claude Code / Codex / Trae;
-  the root `SKILL.md` is the multi-agent entry point.
+  `PTContent` template (a pure `buildState(t)` plus `drawScreen()`).
+- **Everything included** — procedural built-in laptop and phone models (no
+  external assets, no license risk), two content templates (`terminal` and
+  `web-scroll`), and a browser **calibration playground** for targeting the
+  screen mesh on any GLB.
+- **Ready for AI agents** — installable as a skill in Claude Code, Codex, or
+  Trae; the root `SKILL.md` is the multi-agent entry point.
 
 ## Quickstart
 
@@ -68,8 +69,8 @@ python3 tools/pt_export_mp4.py --html trailer.html \
   --orientation horizontal --out trailer-horizontal.mp4
 ```
 
-The `web-scroll` template takes an example config **before** the template
-(pt_build concatenates `--content` files in order):
+For the `web-scroll` template, pass the example config **before** the template
+file (`pt_build` concatenates `--content` files in order):
 
 ```bash
 python3 tools/pt_build.py \
@@ -80,9 +81,9 @@ python3 tools/pt_build.py \
 ```
 
 Bring your own GLB: open the [calibration playground](https://cottzz.github.io/product-trailer/calibrate/),
-load the model, pick the screen mesh, copy out `model.manifest.json`, then
-point `pt_build.py` at it. GLBs must be **uncompressed** glTF (no
-Draco/KTX2 — three r128); run them through gltf-pipeline if needed.
+load the model, pick the screen mesh, export `model.manifest.json`, then point
+`pt_build.py` at it. GLBs must be **uncompressed** glTF (three.js r128 does not
+support Draco or KTX2); run them through gltf-pipeline first if needed.
 
 ## The three contracts
 
@@ -90,7 +91,8 @@ Draco/KTX2 — three r128); run them through gltf-pipeline if needed.
 
 Model source (`builtin:laptop` | `builtin:phone` | inlined base64 | external
 `.glb` path), normalization size, `rotationY`, the screen mesh (name/regex),
-physical aspect + resolution, brand fields. See `examples/*/model.manifest.json`.
+physical aspect ratio and resolution, and brand fields. See
+`examples/*/model.manifest.json`.
 
 ### 2. The storyboard contract — `storyboard.json`
 
@@ -100,20 +102,21 @@ shots verification table. See `examples/*/storyboard.json`.
 
 ### 3. The content contract — `PTContent`
 
-A JS object exposing `meta` (`screen.w/h`), `buildState(t)` (**pure** time →
-state; the determinism root), `drawScreen(ctx, state, w, h, t)`,
-`theme` (CSS variables), `mountOverlay(root, brand)` / `updateOverlay(t, state)`
-for DOM overlay animation, `startHtml(brand)` / `endHtml(brand)` frames, and
-`scheduleAudio(ctx, startTime, duration, gain)` (must run identically on a
+A JS object exposing `meta` (`screen.w/h`), `buildState(t)` (a **pure**
+time-to-state function; the root of determinism), `drawScreen(ctx, state, w, h, t)`,
+`theme` (CSS variables), `mountOverlay(root, brand, brandCfg)` and
+`updateOverlay(t, state)` for DOM overlay animation, `startHtml(brand, brandCfg)`
+and `endHtml(brand, brandCfg)` frames, and
+`scheduleAudio(ctx, startTime, duration, gain)` (must behave identically on a
 real `AudioContext` and an `OfflineAudioContext`). Reference implementations:
 `content/terminal/content.js`, `content/web-scroll/content.js`.
 
 ## Determinism
 
 The MP4 export never relies on wall-clock animation. The engine exposes
-`window.__PT.seek(t)`; the exporter steps every frame at `1/30` intervals
-under headless Chromium with SwiftShader, captures the canvas, and renders
-audio via `OfflineAudioContext`. A double-render probe at a mid-trailer frame
+`window.__PT.seek(t)`; under headless Chromium with SwiftShader, the exporter
+steps through every frame at `1/30`-second intervals, captures the canvas, and
+renders audio via `OfflineAudioContext`. A double-render probe at a mid-trailer frame
 asserts byte-identical PNG output — `tools/ci_export.py` enforces this gate
 across both templates and both orientations (44 checks).
 
@@ -126,12 +129,12 @@ npx skills add Cottzz/product-trailer -a trae  # Trae only
 
 ## Examples & gallery
 
-Rendered trailers for all three example projects (self-dogfooding,
-SellerScope, landing-page scroll) — both orientations plus poster frames and
-self-contained HTML cuts — live on the
-[gallery page](https://cottzz.github.io/product-trailer/gallery/). Media is
-hosted as [GitHub Release assets](https://github.com/Cottzz/product-trailer/releases/tag/gallery-media)
-(never committed to git); regenerate everything with
+Rendered trailers for all three example projects (the self-demo trailer,
+SellerScope, and the landing-page scroll) live on the
+[gallery page](https://cottzz.github.io/product-trailer/gallery/), including
+both orientations, poster frames, and self-contained HTML cuts. Media is hosted
+as [GitHub Release assets](https://github.com/Cottzz/product-trailer/releases/tag/gallery-media)
+and is never committed to git; regenerate everything with
 `tools/pt_render_materials.sh`.
 
 > **Model licensing note:** only CC0 / public-domain / procedurally generated
@@ -141,11 +144,28 @@ hosted as [GitHub Release assets](https://github.com/Cottzz/product-trailer/rele
 > be committed or redistributed. Keep them in the git-ignored `models/local/`
 > and see [`models/ATTRIBUTION.md`](models/ATTRIBUTION.md).
 
+## Disclaimer
+
+**English —** The 3D models used in this project's video demonstrations are
+for feature demonstration purposes only. MacBook and its industrial design
+and trademarks are the property of Apple Inc. This project is not affiliated
+with, endorsed by, or sponsored by Apple Inc. A trademark disclaimer line is
+rendered into the finale of every trailer by default; override or localize it
+via `brand.disclaimer` in `model.manifest.json` (or `cfg.disclaimer` in an
+example's content config; set it to `false` to hide it). See
+[Apple's guidelines for third parties](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html).
+
+**中文 —** 本项目的视频演示中使用的 3D 模型仅用于功能展示。MacBook 及其工业设计、商标所有权均归
+Apple Inc. 所有，本项目与其无任何官方关联或背书关系。每条预告片的结尾画面默认会渲染一行商标免责声明，
+可通过 `model.manifest.json` 的 `brand.disclaimer`（或范例 content 配置中的 `cfg.disclaimer`）
+自定义/本地化（设为 `false` 可关闭）。参见
+[Apple 第三方使用指引（中文）](https://www.apple.com.cn/legal/intellectual-property/guidelinesfor3rdparties.html)。
+
 ## Roadmap
 
-See [`docs/PLAN.md`](docs/PLAN.md) for the audit-revised plan. v0.2 tracks a
-full browser playground (GLB drag-and-drop → render in-page), a CC0 model
-library, and more content templates.
+See [`docs/PLAN.md`](docs/PLAN.md) for the audit-revised plan. Planned for
+v0.2: a full browser playground (GLB drag-and-drop → render in-page), a CC0
+model library, and more content templates.
 
 ## License
 

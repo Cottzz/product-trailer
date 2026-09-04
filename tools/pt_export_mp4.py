@@ -34,7 +34,11 @@ from playwright.sync_api import sync_playwright
 
 LAUNCH_ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
                '--no-sandbox', '--force-color-profile=srgb',
-               '--disable-lcd-text', '--disable-font-subpixel-positioning']
+               '--disable-lcd-text', '--disable-font-subpixel-positioning',
+               # Defensive: under headless CPU load, force every compositor
+               # stage to finish before a draw so screenshots never capture a
+               # partially-composited frame.
+               '--run-all-compositor-stages-before-draw']
 
 
 def write_wav_pcm16(path, pcm_bytes, sample_rate, channels=2):
@@ -151,7 +155,8 @@ def main():
         # ---- video frames: seek per frame -> ffmpeg stdin (PNG pipe) --------
         if ok:
             cmd = ['ffmpeg', '-y',
-                   '-f', 'image2pipe', '-c:v', 'png', '-i', 'pipe:0',
+                   '-f', 'image2pipe', '-framerate', str(args.fps),
+                   '-c:v', 'png', '-i', 'pipe:0',
                    '-i', wav_path,
                    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18',
                    '-preset', 'medium', '-r', str(args.fps),

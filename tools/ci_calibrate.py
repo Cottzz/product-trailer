@@ -24,7 +24,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CALIBRATE = os.path.join(ROOT, 'calibrate', 'index.html')
 FIXTURE_GLB = os.path.join(ROOT, 'dist', 'fixtures', 'fixture-device.glb')
 LAUNCH_ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
-               '--no-sandbox', '--force-color-profile=srgb']
+               '--no-sandbox', '--force-color-profile=srgb',
+               '--run-all-compositor-stages-before-draw']
 
 
 def launch_page(p, path, width=1280, height=800):

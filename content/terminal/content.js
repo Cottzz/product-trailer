@@ -147,21 +147,38 @@
   }
 
   /* ---------------- full-screen DOM overlay (finale) ---------------- */
-  var ovBody = null, ovUp = null, lastHtml = '';
+  var ovBody = null, ovUp = null, ovDisc = null, lastHtml = '';
+  /* Trademark disclaimer (F8): a generic third-party trademark statement is
+     shown in the finale of every trailer by default. When a render features a
+     specific branded device (e.g. a real MacBook GLB), override it with the
+     matching text via cfg.disclaimer / brand.disclaimer (string), or set it to
+     false to hide it. */
+  var DEFAULT_DISCLAIMER =
+    '3D models shown are for feature demonstration only and are fictional. ' +
+    'All product names and trademarks are the property of their respective owners.';
   var OVERLAY_CSS =
     '.pt-term-body{flex:1;overflow:hidden;padding:6vh 7vw 2vh;white-space:pre;' +
     'color:var(--green);font-size:clamp(13px,2.1vmin,22px);line-height:1.55;}' +
     '.pt-term-status{flex:0 0 auto;padding:1.2vh 7vw;background:#0e151c;border-top:1px solid var(--line);' +
     'color:var(--cyan);font-size:clamp(11px,1.5vmin,15px);letter-spacing:.3px;white-space:nowrap;overflow:hidden;' +
-    'display:flex;justify-content:space-between;}';
+    'display:flex;justify-content:space-between;}' +
+    '.pt-term-disc{flex:0 0 auto;padding:.8vh 7vw 1.2vh;background:#0e151c;' +
+    'color:var(--slate);font-size:clamp(8px,1.15vmin,12px);line-height:1.45;text-align:center;}';
 
-  function mountOverlay(root, brand) {
+  function disclaimerText(b) {
+    var d = (cfg && cfg.disclaimer !== undefined) ? cfg.disclaimer
+      : (b && b.disclaimer !== undefined) ? b.disclaimer : DEFAULT_DISCLAIMER;
+    return d === false ? '' : String(d || DEFAULT_DISCLAIMER);
+  }
+  function mountOverlay(root, brand, b) {
     root.style.display = 'flex'; root.style.flexDirection = 'column';
     var st = document.createElement('style'); st.textContent = OVERLAY_CSS;
     root.appendChild(st);
     ovBody = document.createElement('div'); ovBody.className = 'pt-term-body';
     ovUp = document.createElement('div'); ovUp.className = 'pt-term-status';
-    root.appendChild(ovBody); root.appendChild(ovUp);
+    ovDisc = document.createElement('div'); ovDisc.className = 'pt-term-disc';
+    ovDisc.textContent = disclaimerText(b);
+    root.appendChild(ovBody); root.appendChild(ovUp); root.appendChild(ovDisc);
   }
   function lineHtml(ln) {
     var h = segsToHtml(ln.segs);
@@ -186,15 +203,22 @@
       '<div id="pt-start-hint" style="color:var(--slate);font-size:11px;line-height:1.8">' +
       esc(cfg.startHint || '▶ Loading 3D model…') + '</div>';
   }
-  function endHtml(brand) {
+  function endHtml(brand, b) {
     var logo = (cfg.logo || [String(brand)]).map(function (l) {
       return '<span class="g">' + esc(l) + '</span>';
     }).join('\n');
+    var disc = disclaimerText(b);
+    var discBar = disc
+      ? '<div style="position:fixed;left:0;right:0;bottom:34px;padding:6px 16px;' +
+        'color:var(--slate);font-size:11px;line-height:1.45;text-align:center;' +
+        'white-space:normal;overflow-wrap:break-word">' +
+        esc(disc) + '</div>' : '';
     return '<div style="border:1px solid var(--line);border-radius:2px;background:var(--panel);' +
       'padding:34px 40px 26px;min-width:min(86vw,560px);box-shadow:0 0 80px rgba(74,246,38,.08)">' +
-      logo + '\n<span class="c">' + esc(brand) + '</span>\n\n' +
+      logo + '\n\n' +
       '<span class="g" style="font-size:1.15em">' + esc(TAGLINE) + '</span>\n\n' +
       PROMPT + '<span class="pt-cursor" style="opacity:var(--pt-cursor-op,1)"></span></div>' +
+      discBar +
       '<div style="position:fixed;left:0;right:0;bottom:0;padding:8px 16px;background:#0e151c;' +
       'border-top:1px solid var(--line);color:var(--cyan);font-size:12px;display:flex;justify-content:space-between">' +
       '<span>' + esc(cfg.endLeft || ('[' + SLUG + '] session complete · exit [0]')) + '</span>' +

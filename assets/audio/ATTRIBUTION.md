@@ -1,13 +1,16 @@
 # Audio Attribution
 
-Only CC0 / public-domain audio is redistributed in this repository.
-Mixkit and CC-BY tracks (e.g. Kevin MacLeod) are **not** committed — their
-licenses restrict standalone redistribution or require attribution that the
-CC0-only policy here avoids.
+No third-party audio files are committed to this repository. Trailer
+soundtracks are synthesized at runtime by the content templates (WebAudio,
+via `scheduleAudio`), so there are no redistributed tracks to attribute yet.
 
-Accepted sources: FreePD.com, Freesound (CC0 filter), OpenGameArt (CC0),
-ccMixter (CC0). Tracks may also be fetched on demand and kept out of git.
+If a template later ships with music, only CC0 / public-domain tracks may be
+committed. Mixkit and CC-BY tracks (e.g. Kevin MacLeod) are **not** accepted —
+their licenses restrict standalone redistribution or require attribution that
+the CC0-only policy here avoids. Accepted sources: FreePD.com, Freesound
+(CC0 filter), OpenGameArt (CC0), ccMixter (CC0). Tracks may also be fetched on
+demand and kept out of git.
 
 | File | Source URL | Author | License | Notes |
-|------|-----------|--------|---------|-------|
-| _(tracks added in M4)_ | | | CC0 | |
+| ---- | ---------- | ------ | ------- | ----- |
+| _(none yet — all audio is synthesized at runtime)_ | | | | |

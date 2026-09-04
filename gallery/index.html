@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>product-trailer — gallery</title>
-<meta name="description" content="Drop in any 3D model with a screen — get a 30-second cinematic as live HTML or deterministic MP4.">
+<meta name="description" content="Drop in any 3D model with a screen and get a 30-second cinematic trailer — as live HTML or deterministic MP4. / 给任意带屏幕的 3D 模型生成 30 秒电影感预告片。">
 <style>
   :root {
     --bg: #0A0E14;
@@ -23,10 +23,19 @@
   body {
     background: var(--bg);
     color: var(--fg);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", sans-serif;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 80px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 80px; position: relative; }
+
+  .lang-switch {
+    position: absolute; top: 20px; right: 24px;
+    font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--c); background: transparent; border: 1px solid rgba(139,233,253,.4);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; letter-spacing: .04em;
+    transition: border-color .15s, color .15s;
+  }
+  .lang-switch:hover { border-color: var(--c); color: var(--fg); }
 
   header.hero { text-align: center; margin-bottom: 56px; }
   .kicker {
@@ -39,7 +48,7 @@
     font-weight: 800; letter-spacing: -0.02em;
   }
   h1 .tr { color: var(--c); }
-  .sub { color: var(--dim); font-size: clamp(15px, 2.2vw, 19px); max-width: 620px; margin: 0 auto; }
+  .sub { color: var(--dim); font-size: clamp(15px, 2.2vw, 19px); max-width: 640px; margin: 0 auto; }
   .sub b { color: var(--fg); font-weight: 600; }
   .hero-actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn {
@@ -56,8 +65,8 @@
     display: flex; flex-direction: column; transition: border-color .2s ease, transform .2s ease;
   }
   .card:hover { border-color: rgba(139,233,253,.45); transform: translateY(-3px); }
-  .card-media { position: relative; aspect-ratio: 16 / 10; background: #000; display: grid; place-items: center; overflow: hidden; }
-  .card-media video { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
+  .card-media { position: relative; aspect-ratio: 9 / 16; background: #000; display: grid; place-items: center; overflow: hidden; }
+  .card-media video { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
   .card-media .tag {
     position: absolute; top: 12px; left: 12px; z-index: 2;
     font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em;
@@ -93,39 +102,38 @@
   }
   section.playground h2 { margin: 0 0 10px; font-size: 24px; }
   section.playground p { color: var(--dim); margin: 0 auto 22px; max-width: 560px; }
+  section.playground code, footer code { font-family: ui-monospace, Menlo, monospace; }
   footer { margin-top: 64px; text-align: center; color: var(--dim); font-size: 13px; }
-  footer code { color: var(--c); font-family: ui-monospace, Menlo, monospace; }
+  footer code { color: var(--c); }
+  footer a { color: var(--c); }
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <button class="lang-switch" id="lang-switch" type="button" aria-label="Switch language">中文</button>
+
   <header class="hero">
-    <span class="kicker">open source · Apache-2.0 · beta</span>
-    <h1>Your product, <br>in a <span class="tr">movie trailer</span></h1>
-    <p class="sub">Drop in any 3D model with a screen — get a <b>30-second cinematic</b> as a
-      live single-file <b>HTML</b> or a deterministic <b>MP4</b>. Zero manual framing.</p>
+    <span class="kicker" data-en="open source · Apache-2.0 · beta" data-zh="开源 · Apache-2.0 · beta">open source · Apache-2.0 · beta</span>
+    <h1 data-en="Your product,<br>in a <span class='tr'>movie trailer</span>" data-zh="你的产品，<br>化身<span class='tr'>电影预告片</span>">Your product,<br>in a <span class="tr">movie trailer</span></h1>
+    <p class="sub" data-en="Drop in any 3D model with a screen and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a deterministic <b>MP4</b>, with no manual framing." data-zh="给任意带屏幕的 3D 模型，生成一段 <b>30 秒电影感预告片</b>：可交付为可交互的单文件 <b>HTML</b>，也可导出确定性 <b>MP4</b>，全程无需手动取景。">Drop in any 3D model with a screen and get a <b>30-second cinematic trailer</b> — delivered as a live single-file <b>HTML</b> or a deterministic <b>MP4</b>, with no manual framing.</p>
     <div class="hero-actions">
-      <a class="btn btn-m" href="https://github.com/Cottzz/product-trailer">Get product-trailer</a>
-      <a class="btn btn-ghost" href="calibrate/">Beta playground (calibrate)</a>
+      <a class="btn btn-m" href="https://github.com/Cottzz/product-trailer" data-en="Get product-trailer" data-zh="获取 product-trailer">Get product-trailer</a>
+      <a class="btn btn-ghost" href="calibrate/" data-en="Try the calibration playground" data-zh="试用校准工作台">Try the calibration playground</a>
     </div>
   </header>
 
   <div class="grid" id="grid"></div>
 
   <section class="playground">
-    <h2>Make your own</h2>
-    <p>Grab a CC0 GLB with a screen, calibrate the display mesh in the browser
-      playground, write a one-file <code>PTContent</code> storyboard, and render —
-      no sign-up, GLB in, MP4 out.</p>
-    <a class="btn btn-ghost" href="../calibrate/">Open the calibration playground →</a>
+    <h2 data-en="Make your own" data-zh="制作你自己的预告片">Make your own</h2>
+    <p data-en="Grab a CC0 GLB model with a screen, calibrate the display mesh in the browser playground, write a storyboard and a screen-content script, and render — no sign-up, GLB in, trailer out." data-zh="找一个带屏幕的 CC0 GLB 模型，在浏览器工作台里校准屏幕 mesh，再写好分镜和屏幕内容脚本，然后渲染——无需注册，GLB 进、成片出。">Grab a CC0 GLB model with a screen, calibrate the display mesh in the browser playground, write a storyboard and a screen-content script, and render — no sign-up, GLB in, trailer out.</p>
+    <a class="btn btn-ghost" href="../calibrate/" data-en="Open the calibration playground →" data-zh="打开校准工作台 →">Open the calibration playground →</a>
   </section>
 
   <footer>
-    <p>Media on this page is hosted as <strong>GitHub Release assets</strong>
-      (<code>gallery-media</code>) — never committed to git. Regenerate with
-      <code>tools/pt_render_materials.sh</code>.</p>
-    <p>Built with product-trailer · <a href="https://github.com/Cottzz/product-trailer" style="color:var(--c)">github.com/Cottzz/product-trailer</a></p>
+    <p data-en="Media on this page is hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and is never committed to git. Regenerate it with <code>tools/pt_render_materials.sh</code>." data-zh="本页媒体以 <strong>GitHub Release 资产</strong>（<code>gallery-media</code>）的形式托管，不会提交到 git；可用 <code>tools/pt_render_materials.sh</code> 全部重新生成。">Media on this page is hosted as <strong>GitHub Release assets</strong> (<code>gallery-media</code>) and is never committed to git. Regenerate it with <code>tools/pt_render_materials.sh</code>.</p>
+    <p data-en="Built with product-trailer · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>" data-zh="由 product-trailer 构建 · <a href='https://github.com/Cottzz/product-trailer'>github.com/Cottzz/product-trailer</a>">Built with product-trailer · <a href="https://github.com/Cottzz/product-trailer">github.com/Cottzz/product-trailer</a></p>
   </footer>
 
 </div>
@@ -136,22 +144,70 @@
   var ITEMS = [
     {
       id: 'dogfood', tag: 'terminal template',
-      title: 'Self dogfooding',
-      desc: 'The project pitches itself in a cinematic terminal session, rendered on the procedural built-in laptop — the first thing product-trailer ever rendered.'
+      title: { en: 'Self dogfooding', zh: '项目自用演示' },
+      desc: {
+        en: 'The project pitches itself in a cinematic terminal session, rendered on a real 14-inch MacBook Pro. The model is used for rendering only and is never redistributed.',
+        zh: '项目给自己拍的预告片：一段电影感的终端会话，渲染在真实的 14 英寸 MacBook Pro 上。该模型仅用于渲染，不会随项目分发。'
+      },
+      liveHtml: false
     },
     {
       id: 'sellerscope', tag: 'terminal template',
-      title: 'SellerScope demo',
-      desc: 'An Amazon product-research assistant trailer, driven entirely by the terminal PTContent template and the three-contract pipeline (manifest · storyboard · content).'
+      title: { en: 'SellerScope demo', zh: 'SellerScope 示例' },
+      desc: {
+        en: 'A trailer for an Amazon product-research assistant, built entirely with the terminal PTContent template and the three-contract pipeline (manifest, storyboard, content).',
+        zh: '为一款亚马逊选品调研助手制作的预告片，全程使用终端 PTContent 模板，由三契约管线（manifest、storyboard、content）驱动。'
+      }
     },
     {
       id: 'landing', tag: 'web-scroll template',
-      desc: 'A mock browser window auto-scrolls a product landing page — cursor glides, clicks ripple, and the finale lands as a DOM overlay. The second content template proves the contract is reusable.',
-      title: 'Landing page auto-scroll'
+      title: { en: 'Landing page auto-scroll', zh: '落地页自动滚动' },
+      desc: {
+        en: 'A mock browser window auto-scrolls a product landing page: the cursor glides, clicks ripple, and the finale lands as a DOM overlay. A second content template, showing the contract is reusable.',
+        zh: '模拟浏览器窗口自动滚动产品落地页：光标滑行、点击泛起涟漪，结尾以 DOM 覆盖层收束。这是第二个内容模板，证明三契约可以复用。'
+      }
     }
   ];
 
+  var L = {
+    'play-cta': { en: '▶ Hover to preview', zh: '▶ 悬停预览' },
+    'live-html': { en: 'Live HTML cut', zh: '在线 HTML 版' },
+    'vertical': { en: 'Vertical 9:16', zh: '竖屏 9:16' },
+    'horizontal': { en: 'Horizontal 16:9', zh: '横屏 16:9' },
+    'doc-title': { en: 'product-trailer — gallery', zh: 'product-trailer — 作品展示' }
+  };
+
+  var lang = 'en';
+  try {
+    var saved = localStorage.getItem('pt-lang');
+    if (saved === 'zh' || saved === 'en') lang = saved;
+    else if ((navigator.language || '').toLowerCase().indexOf('zh') === 0) lang = 'zh';
+  } catch (e) {}
+
   var grid = document.getElementById('grid');
+  var langBtn = document.getElementById('lang-switch');
+
+  function t(node) {
+    var html = node.getAttribute('data-' + lang);
+    if (html != null) node.innerHTML = html;
+  }
+
+  function applyStatic() {
+    var nodes = document.querySelectorAll('[data-en]');
+    for (var i = 0; i < nodes.length; i++) t(nodes[i]);
+    document.title = L['doc-title'][lang];
+    document.documentElement.lang = (lang === 'zh' ? 'zh-CN' : 'en');
+    langBtn.textContent = (lang === 'zh' ? 'EN' : '中文');
+  }
+
+  function cardLinks(it) {
+    var live = (it.liveHtml === false)
+      ? ''
+      : '<a class="live" href="' + REL + it.id + '.html">' + L['live-html'][lang] + '</a>';
+    return live +
+      '<a href="' + REL + it.id + '-vertical.mp4">' + L['vertical'][lang] + '</a>' +
+      '<a href="' + REL + it.id + '-horizontal.mp4">' + L['horizontal'][lang] + '</a>';
+  }
 
   ITEMS.forEach(function (it) {
     var card = document.createElement('div');
@@ -165,7 +221,7 @@
     video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'none';
     var cta = document.createElement('span');
     cta.className = 'play-cta';
-    cta.textContent = '▶ hover to preview';
+    cta.textContent = L['play-cta'][lang];
     var tag = document.createElement('span');
     tag.className = 'tag';
     tag.textContent = it.tag;
@@ -185,21 +241,44 @@
 
     var body = document.createElement('div');
     body.className = 'card-body';
-    body.innerHTML =
-      '<h3>' + it.title + '</h3>' +
-      '<p>' + it.desc + '</p>';
+    var h3 = document.createElement('h3');
+    h3.textContent = it.title[lang];
+    var p = document.createElement('p');
+    p.textContent = it.desc[lang];
     var links = document.createElement('div');
     links.className = 'card-links';
-    links.innerHTML =
-      '<a class="live" href="' + REL + it.id + '.html">Live HTML cut</a>' +
-      '<a href="' + REL + it.id + '-vertical.mp4">Vertical 9:16</a>' +
-      '<a href="' + REL + it.id + '-horizontal.mp4">Horizontal 16:9</a>';
-    body.appendChild(links);
+    links.innerHTML = cardLinks(it);
+    body.appendChild(h3); body.appendChild(p); body.appendChild(links);
 
     card.appendChild(media);
     card.appendChild(body);
+    card._els = { h3: h3, p: p, links: links, cta: cta, it: it };
     grid.appendChild(card);
   });
+
+  function applyCards() {
+    var cards = grid.querySelectorAll('.card');
+    for (var i = 0; i < cards.length; i++) {
+      var els = cards[i]._els;
+      els.h3.textContent = els.it.title[lang];
+      els.p.textContent = els.it.desc[lang];
+      els.cta.textContent = L['play-cta'][lang];
+      els.links.innerHTML = cardLinks(els.it);
+    }
+  }
+
+  function apply() {
+    applyStatic();
+    applyCards();
+  }
+
+  langBtn.addEventListener('click', function () {
+    lang = (lang === 'zh' ? 'en' : 'zh');
+    try { localStorage.setItem('pt-lang', lang); } catch (e) {}
+    apply();
+  });
+
+  apply();
 })();
 </script>
 </body>
