@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **Agent-authored Blender models (F16).** AI agents that can drive Blender
+  through its Python API (e.g. GPT-6 Astra) can now produce the model input
+  themselves instead of requiring a user-supplied GLB. A new guide,
+  `docs/agent-blender-modeling.md`, defines the modeling contract for agents
+  (name the display mesh `screen`, uncompressed glTF for three.js r128,
+  screen aspect ratio, `flipY` note, CC0/trademark rules, pre-delivery
+  checklist), and a new helper `tools/pt_export_glb.py` both exports an
+  r128-safe GLB headlessly from inside Blender (`--export`, with a mesh
+  inventory flagging screen candidates) and verifies any existing GLB
+  without Blender installed (`--check`, fails on Draco/KTX2/meshopt
+  extensions). Both READMEs and `SKILL.md` point at the new workflow.
+
 - **Trademark disclaimer (F8)** — both content templates (`terminal`,
   `web-scroll`) now render a trademark disclaimer line in the finale overlay
   and the end card of every trailer by default. Override or localize it via

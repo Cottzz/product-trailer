@@ -79,6 +79,19 @@ python3 tools/pt_build.py \
 GLB 必须是**未压缩** glTF（three r128 不支持 Draco/KTX2；如有压缩，请先用
 gltf-pipeline 处理）。
 
+**没有 GLB？让 Agent 建一个。** 能通过 Python API 操作 Blender 的 AI Agent
+（GPT-6 Astra、Claude、Codex 等）可以程序化建好设备模型并自行导出。把
+[Agent Blender 建模指南](docs/agent-blender-modeling.md)交给 Agent 即可——
+指南规定了建模契约（屏幕 mesh 命名为 `screen`、未压缩 glTF、屏幕比例、
+许可红线），并用辅助脚本完成导出与校验：
+
+```bash
+# 在 Blender 内无头运行：导出 GLB + 列出全部 mesh 并标出屏幕候选
+blender -b device.blend -P tools/pt_export_glb.py -- --export out/device.glb
+# 任意环境（无需 Blender）：检测到 Draco/KTX2/meshopt 即报错退出
+python3 tools/pt_export_glb.py --check out/device.glb
+```
+
 ## 三契约
 
 1. **模型契约 `model.manifest.json`**：模型来源（`builtin:laptop` |

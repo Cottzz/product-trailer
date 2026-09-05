@@ -43,7 +43,10 @@ release, byte-for-byte identical, with zero manual video editing.
   `web-scroll`), and a browser **calibration playground** for targeting the
   screen mesh on any GLB.
 - **Ready for AI agents** — installable as a skill in Claude Code, Codex, or
-  Trae; the root `SKILL.md` is the multi-agent entry point.
+  Trae; the root `SKILL.md` is the multi-agent entry point. Agents that can
+  drive Blender (e.g. GPT-6 Astra) can even model the device themselves and
+  export a trailer-ready GLB — see the
+  [agent Blender modeling guide](docs/agent-blender-modeling.md).
 
 ## Quickstart
 
@@ -84,6 +87,20 @@ Bring your own GLB: open the [calibration playground](https://cottzz.github.io/p
 load the model, pick the screen mesh, export `model.manifest.json`, then point
 `pt_build.py` at it. GLBs must be **uncompressed** glTF (three.js r128 does not
 support Draco or KTX2); run them through gltf-pipeline first if needed.
+
+**No GLB? Let an agent build one.** AI agents that can drive Blender through
+its Python API (GPT-6 Astra, Claude, Codex, …) can model the device
+procedurally and export it themselves. Point the agent at the
+[agent Blender modeling guide](docs/agent-blender-modeling.md), which defines
+the modeling contract (name the screen mesh `screen`, uncompressed glTF,
+aspect ratio, licensing), then use the helper to export and verify:
+
+```bash
+# inside Blender (headless): exports GLB + lists meshes, flags the screen
+blender -b device.blend -P tools/pt_export_glb.py -- --export out/device.glb
+# anywhere (no Blender needed): fails if Draco/KTX2/meshopt are present
+python3 tools/pt_export_glb.py --check out/device.glb
+```
 
 ## The three contracts
 

@@ -26,6 +26,11 @@ delivered as a single self-contained HTML player and/or a deterministic MP4.
    `rotationY`, screen-mesh selector, `flipY`, screen aspect/resolution, and a
    `brand` object (`name`, `tagline`, `version`, optional `disclaimer`).
    Generate one interactively with the calibration page (`calibrate/`).
+   If the user has no GLB and you can drive Blender yourself, model the device
+   procedurally in Blender and export it: follow
+   `docs/agent-blender-modeling.md` (name the display mesh `screen`, export
+   uncompressed glTF via `tools/pt_export_glb.py`, verify with its `--check`
+   mode, then write an external-source manifest).
 2. **Storyboard** (`storyboard.json`) — duration, portrait/landscape fov, camera
    keyframes `[{t, az, el, d}]`, `orbitTarget` (default `screenCenter`), fades.
 3. **Content template** (PTContent) — `meta`, `buildState(t)` (pure),
